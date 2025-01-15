@@ -27,6 +27,7 @@ process_life_tables <- function(lt_path) {
         year = as.integer(year)
       )
   }) |>
+    # combine sheets
     dplyr::bind_rows() |>
     dplyr::mutate(var = id)
 }
