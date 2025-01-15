@@ -16,6 +16,12 @@ read_very_old <- function(filenm, skip = 3, n_max = 70) {
   )
 }
 
+# process ----
+process_very_old <- function(df) {
+  clean_very_old(df) |>
+    impute_very_old()
+}
+
 # clean ---
 clean_very_old <- function(df) {
   df |>
