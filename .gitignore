@@ -1,3 +1,7 @@
+# Project ----
+/data_raw/
+
+# GitHub R .gitignore template ----
 # History files
 .Rhistory
 .Rapp.history
