@@ -17,7 +17,8 @@ tar_option_set(
 tar_source(
   c(
     here::here("R", "read_very_old.r"),
-    here::here("R", "read_life_tables_2018b.r")
+    here::here("R", "read_life_tables_2018b.r"),
+    here::here("R", "read_snpp_2018b.r")
   )
 )
 
@@ -38,5 +39,16 @@ list(
       full.names = TRUE
     ),
   ),
-  tar_target(df_lifetbl, process_life_tables(lt_paths), pattern = map(lt_paths))
+  tar_target(df_lifetbl, process_life_tables(lt_paths), pattern = map(lt_paths)),
+  # branch over snpp variants
+  tar_files(
+    snpp_paths,
+    list.files(
+      here::here("data_raw"),
+      "^(2018 SNPP).*(females|males).*(.csv$)",
+      recursive = TRUE,
+      full.names = TRUE
+    ),
+  ),
+  tar_target(df_snpp, process_snpp(snpp_paths), pattern = map(snpp_paths))
 )
