@@ -9,7 +9,7 @@
 custom_vars_snpp <- function(npp, snpp) {
 
   ref <- npp |>
-    dplyr::filter(year %in% as.character(2018:2043)) |> # snpp end at 2043
+    dplyr::filter(year %in% 2018:2043) |> # snpp end at 2043
     dplyr::mutate(age = dplyr::case_when(age > 90 ~ 90L, TRUE ~ as.integer(age))) |>
     dplyr::group_by(dplyr::across(c(-area, -pop))) |> # re-sum by age
     dplyr::summarise(pop = sum(pop)) |>
