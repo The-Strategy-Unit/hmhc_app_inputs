@@ -46,7 +46,5 @@ process_mye_lad <- function(filenm, skip = 6, na = c("", NA, "-")) {
         year %in% grp_85plus ~ "85plus",
         year %in% grp_90plus ~ "90plus"
       )
-    ) |>
-    # split on upper age group (85+/90+)
-    dplyr::group_split(grp)
+    )
 }

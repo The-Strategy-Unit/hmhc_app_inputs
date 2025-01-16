@@ -21,7 +21,9 @@ tar_source(
     here::here("R", "read_npp_2018b.r"),
     here::here("R", "read_pop_mye.r"),
     here::here("R", "read_area_lookups.r"),
-    here::here("R", "read_icb_lookup.r")
+    here::here("R", "read_icb_lookup.r"),
+    here::here("R", "helper_lookups.r"),
+    here::here("R", "build_mye_series.r")
   )
 )
 
@@ -108,6 +110,14 @@ list(
   tar_target(data_raw_icb23, here::here("data_raw", "LSOA_(2021)_to_Sub_ICB_Locations_to_Integrated_Care_Boards_Lookup_in_England.csv"),
     format = "file"
   ),
-  tar_target(df_icb23, read_icb23(data_raw_icb23, "lookup_lad2023_icb.csv"))
+  tar_target(df_icb23, read_icb23(data_raw_icb23, "lookup_lad2023_icb.csv")),
+  tar_target(lookup_proj, get_lookup_proj("lookup_proj_vars.csv")),
+  tar_target(lookup_lad18_lad23, get_lookup_lad18_lad23("lookup_lad18_lad23.csv")),
+  #############################################################################
+  # build population mye series
+  #############################################################################
+  tar_target(df_mye_90p, get_mye_90p(df_mye_lad)),
+  tar_target(df_mye_100p, get_mye_100p(df_very_old, df_mye_90p)),
+  tar_target(df_mye_series, get_mye_series(df_mye_100p, lookup_lad18_lad23, df_raw_lad23, df_raw_cty23, df_icb23))
 )
 # nolint end: line_length_linter
