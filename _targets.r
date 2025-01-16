@@ -24,9 +24,9 @@ tar_source(
     here::here("R", "read_icb_lookup.r"),
     here::here("R", "helper_lookups.r"),
     here::here("R", "build_mye_series.r"),
-    here::here("R", "build_snpp_2018b_custom_variants.r")
-    #here::here("R", "build_pop_100_inputs.r"),
-    #here::here("R", "build_pop_90_inputs.r")
+    here::here("R", "build_snpp_2018b_custom_variants.r"),
+    here::here("R", "build_pop_90_inputs.r")
+    #here::here("R", "build_pop_100_inputs.r")
   )
 )
 
@@ -125,6 +125,7 @@ list(
   #############################################################################
   # build population projection series
   #############################################################################
-  tar_target(snpp_2018b_custom_variants, custom_vars_snpp(df_npp, df_snpp))
+  tar_target(snpp_2018b_custom_variants, custom_vars_snpp(df_npp, df_snpp)),
+  tar_target(pop_90p_inputs, build_90p_inputs(snpp_2018b_custom_variants, df_snpp, lookup_lad18_lad23, df_retired_cty, df_npp, df_icb23))
 )
 # nolint end: line_length_linter
