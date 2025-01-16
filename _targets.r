@@ -20,7 +20,8 @@ tar_source(
     here::here("R", "read_snpp_2018b.r"),
     here::here("R", "read_npp_2018b.r"),
     here::here("R", "read_pop_mye.r"),
-    here::here("R", "read_area_lookups.r")
+    here::here("R", "read_area_lookups.r"),
+    here::here("R", "read_icb_lookup.r")
   )
 )
 
@@ -103,6 +104,10 @@ list(
     format = "file"
   ),
   tar_target(df_raw_cty23, read_cty23(data_raw_cty23, "lookup_lad2023_cty.csv")),
-  tar_target(df_retired_cty, get_retired_ctys(df_raw_cty18, df_raw_cty23, "retired_ctys_2018_2023.csv"))
+  tar_target(df_retired_cty, get_retired_ctys(df_raw_cty18, df_raw_cty23, "retired_ctys_2018_2023.csv")),
+  tar_target(data_raw_icb23, here::here("data_raw", "LSOA_(2021)_to_Sub_ICB_Locations_to_Integrated_Care_Boards_Lookup_in_England.csv"),
+    format = "file"
+  ),
+  tar_target(df_icb23, read_icb23(data_raw_icb23, "lookup_lad2023_icb.csv"))
 )
 # nolint end: line_length_linter
