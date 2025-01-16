@@ -1,10 +1,10 @@
 # README
-# Keep custom lists and lookups here
+# keep custom lists and lookups here
 
+# make a mapping from snpp variants to npp variants, and
+# from all projections to life table variants ----
 # nolint start: line_length_linter
-# mapping of population projection variants - snpp to npp, and
-# lookup from projection variants to life table variants ----
-get_lookup_proj <- function(filenm_out) {
+mk_lookup_proj <- function(pathout) {
   dplyr::tribble(
     ~proj_src, ~proj_id, ~proj_desc, ~ex_id, ~proj_map,
     "snpp", "principal_proj", "Principal projection", "ppp", "ppp",
@@ -31,15 +31,17 @@ get_lookup_proj <- function(filenm_out) {
     "npp", "ppz", "Zero net migration (natural change only)", "ppp", NA_character_, 
     "npp", "rpp", "Replacement fertility", "ppp", NA_character_,
   ) |>
-    dplyr::mutate(proj_map = dplyr::case_when(
-      is.na(proj_map) ~ proj_id,
-      TRUE ~ as.character(proj_map)
-    )) |>
-    readr::write_csv(here::here("data", filenm_out))
+    dplyr::mutate(
+      proj_map = dplyr::case_when(
+        is.na(proj_map) ~ proj_id,
+        TRUE ~ as.character(proj_map)
+      )
+    ) |>
+    readr::write_csv(pathout)
 } 
 
-# lookup for local government changes from 2018 to 2023 ----
-get_lookup_lad18_lad23 <- function(filenm_out) {
+# make a mapping for local government changes from 2018 to 2023 ----
+mk_lookup_lad18_lad23 <- function(pathout) {
   dplyr::tribble(
     ~"yrofchg", ~"lad18cd", ~"lad18nm", ~"new_ladcd", ~"new_ladnm",
     2019, "E06000028", "Bournemouth", "E06000058", "Bournemouth, Christchurch and Poole",
@@ -88,6 +90,6 @@ get_lookup_lad18_lad23 <- function(filenm_out) {
     2019, "E07000206", "Waveney", "E07000244", "East Suffolk"
   ) |>
     dplyr::mutate(yrofchg = as.integer(yrofchg)) |>
-    readr::write_csv(here::here("data", filenm_out))
+    readr::write_csv(pathout)
 }
 # nolint end: line_length_linter

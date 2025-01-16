@@ -1,18 +1,23 @@
 # README
-# Read-in life tables from 2018-based national population projections
+# read life tables from national population projections 2018-based
+# nolint start: line_length_linter
+# https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/expectationoflifeprincipalprojectionengland
+# https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/expectationoflifehighlifeexpectancyvariantengland
+# https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/expectationoflifelowlifeexpectancyvariantengland
+# nolint end: line_length_linter
 # x2 variant life tables were published alongside the principal
 
-# process ----
-process_life_tables <- function(lt_path) {
-  
-  id <- stringr::str_extract(lt_path, "[a-z]{3}(?=18ex)")
+# prep ----
+prep_life_tbl <- function(path) {
 
-  lt_sheets <- readxl::excel_sheets(lt_path) |>
+  id <- stringr::str_extract(path, "[a-z]{3}(?=18ex)")
+
+  sheets <- readxl::excel_sheets(path) |>
     stringr::str_subset(pattern = "period|cohort")
-      
+
   # iterate over sheets
-  purrr::map(lt_sheets, \(x) {
-    readxl::read_xls(lt_path, x, skip = 9) |>
+  purrr::map(sheets, \(x) {
+    readxl::read_xls(path, x, skip = 9) |>
       dplyr::filter(!dplyr::row_number() == 1L) |>
       dplyr::rename_with(.cols = 1, ~"age") |>
       dplyr::mutate(base = "2018b") |>
@@ -29,5 +34,5 @@ process_life_tables <- function(lt_path) {
   }) |>
     # combine sheets
     dplyr::bind_rows() |>
-    dplyr::mutate(var = id)
+    dplyr::mutate(id = id)
 }

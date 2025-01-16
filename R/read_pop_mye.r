@@ -1,18 +1,17 @@
 # README
-# Read-in mid-year population estimates for years 2000 to 2023
-# https://www.nomisweb.co.uk
-# MYE for 2000 are 0-85+. We use England numbers from 2001 to apportion 85+
-# population in 2000 to ages 85-90+.
+# read mid-year population estimates for years 1991 to 2023
+# sourced from https://www.nomisweb.co.uk
+# mye from 1991-2000 are 0-85+; 0-90+ from 2001 onward
 
-# read LADs ----
-process_mye_lad <- function(filenm, skip = 6, na = c("", NA, "-")) {
+# read ----
+read_mye <- function(path, skip = 6, na = c("", NA, "-")) {
 
   start_year <- 1991
   end_year   <- 2023
-  grp_85plus <- start_year:2000
-  grp_90plus <- 2001:end_year
+  grp_85p    <- start_year:2000
+  grp_90p    <- 2001:end_year
 
-  readr::read_csv(filenm, skip = skip, na = na) |>
+  readr::read_csv(path, skip = skip, na = na) |>
     dplyr::rename(
       area_name = Area,
       area_code = mnemonic,
@@ -21,10 +20,11 @@ process_mye_lad <- function(filenm, skip = 6, na = c("", NA, "-")) {
     ) |>
     dplyr::filter(
       !is.na(area_name),
+      # limit to England
       stringr::str_detect(area_code, "^E0|^E92")
     ) |>
-    dplyr::mutate(row_id = as.integer(row_id)) |>
     dplyr::mutate(
+      row_id = as.integer(row_id),
       tbl_id = cumsum(row_id == 1),
       year = dplyr::if_else(tbl_id %% 2 == 1, (tbl_id + 1) / 2, tbl_id / 2),
       year = year + start_year - 1,
@@ -43,8 +43,8 @@ process_mye_lad <- function(filenm, skip = 6, na = c("", NA, "-")) {
     ) |>
     dplyr::mutate(
       grp = dplyr::case_when(
-        year %in% grp_85plus ~ "85plus",
-        year %in% grp_90plus ~ "90plus"
+        year %in% grp_85p ~ "85 plus",
+        year %in% grp_90p ~ "90 plus"
       )
     )
 }

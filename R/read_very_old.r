@@ -1,23 +1,19 @@
 # README
-# Read-in population estimates of the very old including centenarians
+# read population estimates of the very old including centenarians
 # https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/ageing/datasets/midyearpopulationestimatesoftheveryoldincludingcentenariansengland # nolint: line_length_linter.
-# Data is missing for 2000 and 2001 - we impute using data for 2002.
-# We use the distribution for ages 90-100+ for England to approximate the
-# distribution in local areas. The only place this is used is to determine the
-# length of bars in the population pyramid. For modeling, the upper age group is
-# 90+, any higher and the variation in activity rates becomes excessive.
+# data is missing for 2000 and 2001 - we impute using data from 2002
 
 # read ----
-read_very_old <- function(filenm, skip = 3, n_max = 70) {
+read_very_old <- function(path, skip = 3, n_max = 70) {
   readr::read_csv(
-    filenm,
+    path,
     skip = skip,
     n_max = n_max,
   )
 }
 
-# process ----
-process_very_old <- function(df) {
+# prep ----
+prep_very_old <- function(df) {
   clean_very_old(df) |>
     impute_very_old()
 }
@@ -32,7 +28,7 @@ clean_very_old <- function(df) {
     # identify male and female
     dplyr::mutate(tbl_id = cumsum(year == 2002)) |>
     dplyr::filter(tbl_id %in% c(2, 3)) |>
-    # check males first
+    # check males listed first
     dplyr::mutate(sex = dplyr::if_else(tbl_id == 2L, "m", "f")) |>
     dplyr::select(
       year, sex, dplyr::starts_with("9"), `100 & over`,
@@ -44,11 +40,11 @@ clean_very_old <- function(df) {
       names_to = "age",
       values_to = "pop"
     ) |>
-    dplyr::mutate(across(c("year", "age"), as.integer))
+    dplyr::mutate(dplyr::across(c("year", "age"), as.integer))
 }
 
-# impute missing data ----
-# no data for 2000 and 2001 - impute using data for 2002
+# impute missing years ----
+# no data for 2000 and 2001 - impute using data from 2002
 impute_very_old <- function(df) {
   df |>
     dplyr::group_by(sex, age) |>
