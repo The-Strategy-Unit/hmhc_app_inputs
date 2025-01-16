@@ -23,5 +23,5 @@ process_snpp <- function(snpp_path) {
     ) |>
     dplyr::mutate(across(c(age_group, year), as.integer)) |>
     dplyr::rename(age = age_group) |>
-    dplyr::mutate(var = id)
+    dplyr::mutate(id = id)
 }

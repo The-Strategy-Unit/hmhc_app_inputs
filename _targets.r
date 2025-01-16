@@ -23,7 +23,10 @@ tar_source(
     here::here("R", "read_area_lookups.r"),
     here::here("R", "read_icb_lookup.r"),
     here::here("R", "helper_lookups.r"),
-    here::here("R", "build_mye_series.r")
+    here::here("R", "build_mye_series.r"),
+    here::here("R", "build_snpp_2018b_custom_variants.r")
+    #here::here("R", "build_pop_100_inputs.r"),
+    #here::here("R", "build_pop_90_inputs.r")
   )
 )
 
@@ -118,6 +121,10 @@ list(
   #############################################################################
   tar_target(df_mye_90p, get_mye_90p(df_mye_lad)),
   tar_target(df_mye_100p, get_mye_100p(df_very_old, df_mye_90p)),
-  tar_target(df_mye_series, get_mye_series(df_mye_100p, lookup_lad18_lad23, df_raw_lad23, df_raw_cty23, df_icb23))
+  tar_target(df_mye_series, get_mye_series(df_mye_100p, lookup_lad18_lad23, df_raw_lad23, df_raw_cty23, df_icb23)),
+  #############################################################################
+  # build population projection series
+  #############################################################################
+  tar_target(snpp_2018b_custom_variants, custom_vars_snpp(df_npp, df_snpp))
 )
 # nolint end: line_length_linter
