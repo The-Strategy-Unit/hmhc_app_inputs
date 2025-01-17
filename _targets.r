@@ -20,13 +20,13 @@ tar_source(
     here::here("R", "read_snpp_2018b.r"),
     here::here("R", "read_npp_2018b.r"),
     here::here("R", "read_pop_mye.r"),
-    here::here("R", "read_area_lookups.r"),
+    here::here("R", "read_geog_codes.r"),
     here::here("R", "read_icb_lookup.r"),
     here::here("R", "helper_lookups.r"),
-    here::here("R", "build_mye_series.r"),
-    here::here("R", "build_snpp_2018b_custom_variants.r"),
-    here::here("R", "build_pop_90_inputs.r"),
-    here::here("R", "build_pop_100_inputs.r")
+    here::here("R", "make_mye_series.r"),
+    here::here("R", "make_snpp_2018b_custom_vars.r"),
+    here::here("R", "make_snpp_series.r"),
+    here::here("R", "make_snpp_series_age100.r")
   )
 )
 
@@ -40,7 +40,7 @@ list(
     format = "file"
   ),
   tar_target(df_raw_very_old, read_very_old(data_raw_very_old)),
-  tar_target(df_very_old, process_very_old(df_raw_very_old)),
+  tar_target(df_very_old, prep_very_old(df_raw_very_old)),
   # branch over life table files
   tar_files(
     lt_paths,
@@ -51,7 +51,7 @@ list(
       full.names = TRUE
     ),
   ),
-  tar_target(df_lifetbl, process_life_tables(lt_paths), pattern = map(lt_paths)),
+  tar_target(df_lifetbl, prep_life_tbl(lt_paths), pattern = map(lt_paths)),
   # branch over snpp variants
   tar_files(
     snpp_paths,
@@ -62,7 +62,7 @@ list(
       full.names = TRUE
     ),
   ),
-  tar_target(df_snpp, process_snpp(snpp_paths), pattern = map(snpp_paths)),
+  tar_target(df_snpp, prep_snpp(snpp_paths), pattern = map(snpp_paths)),
   # branch over npp variants
   tar_files(
     npp_paths,
@@ -73,60 +73,60 @@ list(
       full.names = TRUE
     ),
   ),
-  tar_target(df_npp, process_npp(npp_paths), pattern = map(npp_paths)),
+  tar_target(df_npp, prep_npp(npp_paths), pattern = map(npp_paths)),
   tar_target(data_raw_npp_codes, here::here("data_raw", "npp_2018b", "NPP codes.txt"),
     format = "file"
   ),
-  tar_target(df_npp_codes, process_npp_codes(data_raw_npp_codes, "npp_2018b_codes.csv")),
-  tar_target(data_raw_mye_lad, here::here("data_raw", "nomis_mye_lad_1991to2023_20250116.csv"),
+  tar_target(df_npp_codes, prep_npp_codes(data_raw_npp_codes, here::here("data", "npp_2018b_codes.csv"))),
+  tar_target(data_raw_mye, here::here("data_raw", "nomis_mye_lad_1991to2023_20250116.csv"),
     format = "file"
   ),
-  tar_target(df_mye_lad, process_mye_lad(data_raw_mye_lad)),
+  tar_target(df_mye, read_mye(data_raw_mye)),
   #############################################################################
   # read-in area lookups
   #############################################################################
   tar_target(data_raw_lad18, here::here("data_raw", "LAD_(Dec_2018)_Names_and_Codes_in_the_United_Kingdom.csv"),
     format = "file"
   ),
-  tar_target(df_raw_lad18, read_lad18(data_raw_lad18, "local_authority_districts_2018.csv")),
+  tar_target(df_raw_lad18, read_lad18(data_raw_lad18, here::here("data", "local_authority_districts_2018.csv"))),
   tar_target(data_raw_lad22, here::here("data_raw", "LAD_(Dec_2022)_Names_and_Codes_in_the_United_Kingdom.csv"),
     format = "file"
   ),
-  tar_target(df_raw_lad22, read_lad22(data_raw_lad22, "local_authority_districts_2022.csv")),
+  tar_target(df_raw_lad22, read_lad22(data_raw_lad22, here::here("data", "local_authority_districts_2022.csv"))),
   tar_target(data_raw_lad23, here::here("data_raw", "LAD_(Apr_2023)_Names_and_Codes_in_the_United_Kingdom.csv"),
     format = "file"
   ),
-  tar_target(df_raw_lad23, read_lad23(data_raw_lad23, "local_authority_districts_2023.csv")),
+  tar_target(df_raw_lad23, read_lad23(data_raw_lad23, here::here("data", "local_authority_districts_2023.csv"))),
   tar_target(data_raw_cty18, here::here("data_raw", "Local_Authority_District_to_County_(December_2018)_Lookup_in_England.csv"),
     format = "file"
   ),
-  tar_target(df_raw_cty18, read_cty18(data_raw_cty18, "lookup_lad2018_cty.csv")),
+  tar_target(df_raw_cty18, read_cty18(data_raw_cty18, here::here("data", "lookup_lad2018_cty.csv"))),
   tar_target(data_raw_cty22, here::here("data_raw", "Local_Authority_District_to_County_(December_2022)_Lookup_in_England.csv"),
     format = "file"
   ),
-  tar_target(df_raw_cty22, read_cty22(data_raw_cty22, "lookup_lad2022_cty.csv")),
+  tar_target(df_raw_cty22, read_cty22(data_raw_cty22, here::here("data", "lookup_lad2022_cty.csv"))),
   tar_target(data_raw_cty23, here::here("data_raw", "Local_Authority_District_to_County_(April_2023)_Lookup_in_England.csv"),
     format = "file"
   ),
-  tar_target(df_raw_cty23, read_cty23(data_raw_cty23, "lookup_lad2023_cty.csv")),
-  tar_target(df_retired_cty, get_retired_ctys(df_raw_cty18, df_raw_cty23, "retired_ctys_2018_2023.csv")),
+  tar_target(df_raw_cty23, read_cty23(data_raw_cty23, here::here("data", "lookup_lad2023_cty.csv"))),
+  tar_target(df_retired_cty, get_retired_ctys(df_raw_cty18, df_raw_cty23, here::here("data", "retired_ctys_2018_2023.csv"))),
   tar_target(data_raw_icb23, here::here("data_raw", "LSOA_(2021)_to_Sub_ICB_Locations_to_Integrated_Care_Boards_Lookup_in_England.csv"),
     format = "file"
   ),
-  tar_target(df_icb23, read_icb23(data_raw_icb23, "lookup_lad2023_icb.csv")),
-  tar_target(lookup_proj, get_lookup_proj("lookup_proj_vars.csv")),
-  tar_target(lookup_lad18_lad23, get_lookup_lad18_lad23("lookup_lad18_lad23.csv")),
+  tar_target(df_icb23, mk_lookup_icb23(data_raw_icb23, here::here("data", "lookup_lad23_icb23.csv"))),
+  tar_target(lookup_proj_id, mk_lookup_proj(here::here("data", "lookup_proj_id.csv"))),
+  tar_target(lookup_lad18_lad23, mk_lookup_lad18_lad23(here::here("data", "lookup_lad18_lad23.csv"))),
   #############################################################################
   # build population mye series
   #############################################################################
-  tar_target(df_mye_90p, get_mye_90p(df_mye_lad)),
-  tar_target(df_mye_100p, get_mye_100p(df_very_old, df_mye_90p)),
-  tar_target(df_mye_series, get_mye_series(df_mye_100p, lookup_lad18_lad23, df_raw_lad23, df_raw_cty23, df_icb23)),
+  tar_target(df_mye_to90, mk_mye_to90(df_mye)),
+  tar_target(df_mye_to100, mk_mye_to100(df_very_old, df_mye_to90)),
+  tar_target(df_mye_series, mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)),
   #############################################################################
   # build population projection series
   #############################################################################
-  tar_target(snpp_2018b_custom_variants, custom_vars_snpp(df_npp, df_snpp)),
-  tar_target(pop_90p_inputs, build_90p_inputs(snpp_2018b_custom_variants, df_snpp, lookup_lad18_lad23, df_retired_cty, df_npp, df_icb23)),
-  tar_target(pop_100p_inputs, apply_90plus_dist(df_npp, pop_90p_inputs, lookup_proj))
+  tar_target(snpp_custom_vars, mk_custom_vars(df_npp, df_snpp)),
+  tar_target(snpp_series_to90, mk_snpp_series(snpp_custom_vars, df_snpp, lookup_lad18_lad23, df_retired_cty, df_npp, df_icb23)),
+  tar_target(snpp_series_to100, make_snpp_100(df_npp, snpp_series_to90, lookup_proj_id))
 )
 # nolint end: line_length_linter
