@@ -10,7 +10,7 @@
 # we create our own.
 
 # extend snpp to 100+ ----
-extend_snpp_100 <- function(npp, snpp, lookup_proj) {
+make_snpp_100 <- function(npp, snpp, lookup_proj) {
 
   # extract 90+ distribution from npp
   npp_90plus <- npp |>
