@@ -28,14 +28,14 @@ mk_custom_vars <- function(npp, snpp) {
         dplyr::filter(id == "ppp") |>
         dplyr::rename(ppp = pop) |>
         dplyr::select(-id),
-      join_by = c("year", "sex", "age")
+      dplyr::join_by("year", "sex", "age")
     ) |>
     dplyr::mutate(mx = pop / ppp) |>
     dplyr::ungroup() |>
     dplyr::filter(id != "ppp") |>
     dplyr::select(-ppp, -pop)
 
-  custom <- purrr::map(mx |> dplyr::group_split(id), \(x) {
+  purrr::map(mx |> dplyr::group_split(id), \(x) {
     x |>
       dplyr::left_join(
         snpp |>
