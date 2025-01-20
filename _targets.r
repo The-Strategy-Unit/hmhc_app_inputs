@@ -26,7 +26,9 @@ tar_source(
     here::here("R", "make_mye_series.r"),
     here::here("R", "make_snpp_2018b_custom_vars.r"),
     here::here("R", "make_snpp_series.r"),
-    here::here("R", "make_snpp_series_age100.r")
+    here::here("R", "make_snpp_series_age100.r"),
+    here::here("R", "edc_functions.r"),
+    here::here("R", "edc_prep_functions.r")
   )
 )
 
@@ -127,6 +129,14 @@ list(
   #############################################################################
   tar_target(snpp_custom_vars, mk_custom_vars(df_npp, df_snpp)),
   tar_target(snpp_series_to90, mk_snpp_series(snpp_custom_vars, df_snpp, lookup_lad18_lad23, df_retired_cty, df_npp, df_icb23)),
-  tar_target(snpp_series_to100, make_snpp_100(df_npp, snpp_series_to90, lookup_proj_id))
+  tar_target(snpp_series_to100, make_snpp_100(df_npp, snpp_series_to90, lookup_proj_id)),
+  #############################################################################
+  # prep activity data
+  #############################################################################
+  tar_target(data_raw_edc, here::here("data_raw", "edc_dat_20250120.csv"),
+    format = "file"),
+  tar_target(df_raw_edc, read_raw_edc(data_raw_edc)),
+  # branch over df grouped by area_code
+  tarchetypes::tar_group_by(df_prep_edc, prep_edc(df_raw_edc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
+  tar_target(df_prep_edc_grp, put_in_dirs(df_prep_edc), pattern = map(df_prep_edc))
 )
-# nolint end: line_length_linter
