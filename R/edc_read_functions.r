@@ -4,18 +4,9 @@
 # read_raw_edc() ----
 read_raw_edc <- function(filenm) {
   readr::read_csv(
-    here::here("data_raw", filenm),
+    filenm,
     na = c("", "NA", "NULL")
   )
-}
-
-# clean_raw_edc() ----
-clean_raw_edc <- function(df) {
-  df |>
-    tidyr::drop_na() |>
-    dplyr::filter(
-      stringr::str_detect(lacd, "^(?:E10|E0[6-9])")
-    )
 }
 
 # review_raw_edc() ----
