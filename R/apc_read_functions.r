@@ -4,21 +4,9 @@
 # read_raw_apc() ----
 read_raw_apc <- function(filenm) {
   readr::read_csv(
-    here::here("data_raw", filenm),
+    filenm,
     na = c("", "NA", "NULL")
   )
-}
-
-# clean_raw_apc() ----
-clean_raw_apc <- function(df) {
-  df |>
-    tidyr::drop_na() |>
-    dplyr::filter(
-      stringr::str_detect(lacd, "^(?:E10|E0[6-9])")
-    ) |>
-    # pick a bed-days variable
-    dplyr::select(-bds_dd) |>
-    dplyr::rename(bds = bds_sus)
 }
 
 # review_raw_apc() ----

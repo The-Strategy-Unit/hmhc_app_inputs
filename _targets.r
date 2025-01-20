@@ -27,8 +27,10 @@ tar_source(
     here::here("R", "make_snpp_2018b_custom_vars.r"),
     here::here("R", "make_snpp_series.r"),
     here::here("R", "make_snpp_series_age100.r"),
-    here::here("R", "edc_functions.r"),
-    here::here("R", "edc_prep_functions.r")
+    here::here("R", "edc_read_functions.r"),
+    here::here("R", "edc_prep_functions.r"),
+    here::here("R", "apc_read_functions.r"),
+    here::here("R", "apc_prep_functions.r")
   )
 )
 
@@ -138,5 +140,12 @@ list(
   tar_target(df_raw_edc, read_raw_edc(data_raw_edc)),
   # branch over df grouped by area_code
   tarchetypes::tar_group_by(df_prep_edc, prep_edc(df_raw_edc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
-  tar_target(df_prep_edc_grp, put_in_dirs(df_prep_edc), pattern = map(df_prep_edc))
+  tar_target(df_prep_edc_grp, put_in_dirs(df_prep_edc), pattern = map(df_prep_edc)),
+  tar_target(data_raw_apc, here::here("data_raw", "apc_dat_20250120.csv"),
+    format = "file"),
+  tar_target(df_raw_apc, read_raw_edc(data_raw_apc)),
+  # branch over df grouped by area_code
+  tarchetypes::tar_group_by(df_prep_apc, prep_apc(df_raw_apc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
+  tar_target(df_prep_apc_grp, apc_to_dirs(df_prep_apc), pattern = map(df_prep_apc))
 )
+# nolint end: line_length_linter
