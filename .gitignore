@@ -1,6 +1,7 @@
 # Project ----
 /data_raw/
 /data/
+/figures/
 
 # GitHub R .gitignore template ----
 # History files
