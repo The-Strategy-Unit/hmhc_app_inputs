@@ -105,7 +105,9 @@ prep_edc <- function(
   dplyr::bind_rows(df_lad, df_cty, df_icb, df_eng)
 }
 
-# put_in_dirs ----
-put_in_dirs <- function(df) {
-  readr::write_rds(df, here::here("data", "2022", df$area_code[[1]], "edc.rds"))
+# edc_to_dirs ----
+edc_to_dirs <- function(df) {
+  readr::write_rds(
+    df, here::here("data", "2022", df$area_code[[1]], "edc_dat.rds")
+  )
 }
