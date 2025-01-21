@@ -116,5 +116,14 @@ mk_snpp_series <- function(
   )
 }
 
+# snpp_to_dirs ----
+snpp_to_dirs <- function(df) {
+  df |>
+    tidyr::pivot_wider(names_from = "year", values_from = "pop") |>
+    readr::write_rds(
+      here::here("data", "2022", df$area_code[[1]], "pop_dat.rds")
+    )
+}
+
 # test ----
 # source(here("R/tests", "test_build_pop_90_inputs.R")) # nolint: commented_code_linter, line_length_linter.
