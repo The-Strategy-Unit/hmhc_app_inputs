@@ -22,7 +22,7 @@ prep_apc <- function(
     ) |>
     dplyr::rename(area_code = lacd) |>
     dplyr::mutate(dplyr::across(c(age, n), as.integer)) |>
-    dplyr::group_by(area_code, sex, age, admigrp) |>
+    dplyr::group_by(area_code, setting, admigrp, sex, age) |>
     dplyr::summarise(n = sum(n), bds = sum(bds)) |>
     dplyr::ungroup() |>
     tidyr::pivot_longer(
@@ -43,7 +43,7 @@ prep_apc <- function(
     # make explicit any missing sex/age combinations
     # by hsagrp in all areas
     tidyr::complete(
-      area_code, hsagrp,
+      area_code, setting, hsagrp,
       tidyr::nesting(sex, age),
       fill = list(n = NA),
       explicit = FALSE
@@ -81,7 +81,7 @@ prep_apc <- function(
       dplyr::across(
         tidyselect::starts_with("cty")
       ),
-      hsagrp, sex, age
+      setting, hsagrp, sex, age
     ) |>
     dplyr::summarise(n = sum(n)) |>
     dplyr::ungroup() |>
@@ -94,7 +94,7 @@ prep_apc <- function(
       dplyr::across(
         tidyselect::starts_with("icb")
       ),
-      hsagrp, sex, age
+      setting, hsagrp, sex, age
     ) |>
     dplyr::summarise(n = sum(n)) |>
     dplyr::ungroup() |>
@@ -102,7 +102,7 @@ prep_apc <- function(
 
   # compile England
   df_eng <- df_lad |>
-    dplyr::group_by(hsagrp, sex, age) |>
+    dplyr::group_by(setting, hsagrp, sex, age) |>
     dplyr::summarise(n = sum(n)) |>
     dplyr::ungroup() |>
     dplyr::mutate(

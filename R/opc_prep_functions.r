@@ -35,7 +35,7 @@ prep_opc <- function(
         TRUE ~ "fup"
       )
     )) |>
-    dplyr::group_by(area_code, sex, age, hsagrp) |>
+    dplyr::group_by(area_code, setting, hsagrp, sex, age) |>
     # sum attendances by is_tele
     dplyr::summarise(
       atts = sum(n * (1 - is_tele)),
@@ -62,7 +62,7 @@ prep_opc <- function(
     # make explicit any missing sex/age combinations
     # by hsagrp in all areas
     tidyr::complete(
-      area_code, hsagrp,
+      area_code, setting, hsagrp,
       tidyr::nesting(sex, age),
       fill = list(n = NA),
       explicit = FALSE
@@ -99,7 +99,8 @@ prep_opc <- function(
     dplyr::group_by(
       dplyr::across(
         tidyselect::starts_with("cty")
-      ), hsagrp, sex, age
+      ),
+      setting, hsagrp, sex, age
     ) |>
     dplyr::summarise(n = sum(n)) |>
     dplyr::ungroup() |>
@@ -114,7 +115,8 @@ prep_opc <- function(
     dplyr::group_by(
       dplyr::across(
         tidyselect::starts_with("icb")
-      ), hsagrp, sex, age
+      ),
+      setting, hsagrp, sex, age
     ) |>
     dplyr::summarise(n = sum(n)) |>
     dplyr::ungroup() |>
@@ -122,7 +124,7 @@ prep_opc <- function(
 
   # compile England
   df_eng <- df_lad |>
-    dplyr::group_by(hsagrp, sex, age) |>
+    dplyr::group_by(setting, hsagrp, sex, age) |>
     dplyr::summarise(n = sum(n)) |>
     dplyr::ungroup() |>
     dplyr::mutate(
