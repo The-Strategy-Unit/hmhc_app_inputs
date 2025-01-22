@@ -151,7 +151,7 @@ random_split_norm <- function(n, mode, sd1, sd2, rng_state) {
 # create_hsa_params() ----
 # draw hsa parameter values
 # param: end_year, type: integer, model horizon
-# param: var, type: string, life table variant, either 'ppp', 'lle' or 'hle'
+# param: var, type: string, life ex variant, either 'ppp', 'lle' or 'hle'
 # param: model_runs, type: integer, number of times to run model
 # param: rng_state, type: integer vector, RNG state
 # returns: parameters for the health status adjustment, rtype: list of 2
