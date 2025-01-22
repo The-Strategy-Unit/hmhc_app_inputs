@@ -93,14 +93,19 @@ create_obs_rt_tbl <- function(
 # helper function for creating gams
 # param: area_code, type: string, ONS geography code
 # param: base_year, type: int, base year for gams
-# param: setting, type: string, either 'ed', 'apc' or 'opc'
+# param: setting, type: string, setting, one of 'edc', 'apc', or 'opc'
 # param: omit_hsagrps, type: string vector, activity groups to omit from hsa
 # returns: dataframe of gams by hasgrp and sex for a single setting, rtype: df
 create_setting_gams <- function(
   area_code, base_year, setting, omit_hsagrps = NULL
 ) {
 
-  setting <- rlang::arg_match(setting, values = c("edc", "apc", "opc"))
+  setting <- rlang::arg_match(
+    setting,
+    values = c("edc", "apc", "opc"),
+    multiple = FALSE
+  )
+
   path_self <- path_closure(area_code, base_year)
 
   # load the activity data
