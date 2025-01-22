@@ -32,7 +32,8 @@ tar_source(
     here::here("R", "apc_read_functions.r"),
     here::here("R", "apc_prep_functions.r"),
     here::here("R", "opc_read_functions.r"),
-    here::here("R", "opc_prep_functions.r")
+    here::here("R", "opc_prep_functions.r"),
+    here::here("R", "assemble_pop_inputs.r") # keep filename?
   )
 )
 
@@ -156,6 +157,12 @@ list(
   tar_target(df_raw_opc, read_raw_opc(data_raw_opc)),
   # branch over df grouped by area_code
   tarchetypes::tar_group_by(df_prep_opc, prep_opc(df_raw_opc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
-  tar_target(df_prep_opc_grp, opc_to_dirs(df_prep_opc), pattern = map(df_prep_opc))
+  tar_target(df_prep_opc_grp, opc_to_dirs(df_prep_opc), pattern = map(df_prep_opc)),
+  #############################################################################
+  # build app files (JSON)
+  #############################################################################
+  # branch over df grouped by area_code
+  tarchetypes::tar_group_by(df_pop_data, build_pop_data(df_mye_series, snpp_series_to100), area_code),
+  tar_target(df, format_pop_data_json(df_pop_data), pattern = map(df_pop_data))
 )
 # nolint end: line_length_linter
