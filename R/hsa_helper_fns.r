@@ -156,7 +156,9 @@ random_split_norm <- function(n, mode, sd1, sd2, rng_state) {
 # param: rng_state, type: integer vector, RNG state
 # returns: parameters for the health status adjustment, rtype: list of 2
 # (females and males), length = model_runs
-create_hsa_params <- function(end_year, var, model_runs, rng_state) {
+create_hsa_params <- function(
+  end_year, var, model_runs, rng_state, mode = FALSE
+) {
 
   # load split normal parameters
   sp_norm_params <- readr::read_csv(
@@ -169,13 +171,19 @@ create_hsa_params <- function(end_year, var, model_runs, rng_state) {
 
   sex <- sp_norm_params$sex
 
-  # draw values
-  params_ls <- purrr::pmap(
-    sp_norm_params[, c("mode", "sd1", "sd2")],
-    random_split_norm,
-    n = model_runs,
-    rng_state = rng_state
-  )
+  # draw values dependent on mode argument
+  if (isTRUE(mode)) {
+    # return mode (single value)
+    params_ls <- purrr::map(sp_norm_params$mode, \(x) x)
+  } else {
+    # return sample (many values)
+    params_ls <- purrr::pmap(
+      sp_norm_params[, c("mode", "sd1", "sd2")],
+      random_split_norm,
+      n = model_runs,
+      rng_state = rng_state
+    )
+  }
 
   names(params_ls) <- sex
 

@@ -18,7 +18,7 @@
 # rtype: df, (f = vector, length = model runs)
 get_hsa_factors <- function(
   area_code, base_year, end_year, proj_id, model_runs, rng_state,
-  method = c("interp", "gams")
+  method = c("interp", "gams"), mode = FALSE
 ) {
 
   method <- rlang::arg_match(method, values = c("interp", "gams"))
@@ -47,7 +47,8 @@ get_hsa_factors <- function(
     end_year,
     var = ex_id,
     model_runs,
-    rng_state
+    rng_state,
+    mode = mode
   )
 
   # age range for health status adjustment
@@ -122,5 +123,10 @@ get_hsa_factors <- function(
     ) |>
     dplyr::select(-gam_rt, -p)
 
-  dplyr::bind_rows(f, m)
+  if (isTRUE(mode)) {
+    dplyr::bind_rows(f, m) |>
+      tidyr::unnest(f)
+  } else {
+    dplyr::bind_rows(f, m)
+  }
 }
