@@ -27,24 +27,26 @@
 # function for returning observed activity rates
 # param: area_code, type: string, ONS geography code
 # param: base_year, type: int, base year for gams
+# param: setting, type: string, settings, one or more of 'edc', 'apc', and 'opc'
 # returns: the filename where the df has been saved to, rtype: string
 create_obs_rt_tbl <- function(
   area_code,
   base_year,
-  setting = NULL
+  # default to all 3 main acute hospital settings
+  setting = c("edc", "apc", "opc")
 ) {
 
-  if (!is.null(setting)) {
-    x <- setting
-  } else {
-    x <- c("edc", "apc", "opc")
-  }
+  setting <- rlang::arg_match(
+    setting,
+    values = c("edc", "apc", "opc"),
+    multiple = TRUE
+  )
 
   path_self <- path_closure(area_code, base_year)
 
   # load the activity data
   act_ls <- purrr::map(
-    x, \(x) {
+    setting, \(x) {
       readr::read_rds(
         path_self(paste0(x, "_dat.rds"))
       )
