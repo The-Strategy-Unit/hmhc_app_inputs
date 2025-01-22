@@ -62,7 +62,7 @@ create_obs_rt_tbl <- function(
     )
   )
 
-  # make explicit missing age values
+  # possibly redundant (data should be pre-aggregated)
   act_df <- act_df |>
     dplyr::group_by(area_code, setting, hsagrp, sex, age) |>
     dplyr::summarise(dplyr::across(n, sum)) |>
