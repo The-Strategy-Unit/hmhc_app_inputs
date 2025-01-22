@@ -1,11 +1,21 @@
 # README
 # calculate HSA change factors for an area
 
-# get_hsa_factors()
-# get_hsa_factors() - should variable name be hsa_fac not f
-# get_hsa_factors() - get_ex_id({{ proj_id }}) - curly needed?
-# get_hsa_factors() - model_rt_hsa_ages - needs including as interp or whatever i names it
+# TODO
+# should variable name be hsa_fac not f
 
+# get_hsa_factors() ----
+# calculate hsa change factors
+# param: area_code, type: string, ONS geography code
+# param: base_year, type: int, model baseline
+# param: end_year, type: int, model horizon
+# param: proj_id, type: string, population projection variant
+# param: model_runs, type: integer, number of times to run model
+# param: rng_state, type: integer vector, RNG state
+# param: method, type : string, method for obtaining modeled activity rates for
+# hsa ages, either 'interp' or 'gams'
+# returns: df, with list column of hsa factors,
+# rtype: df, (f = vector, length = model runs)
 get_hsa_factors <- function(
   area_code, base_year, end_year, proj_id, model_runs, rng_state,
   method = c("interp", "gams")
