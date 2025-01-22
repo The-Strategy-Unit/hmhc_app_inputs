@@ -5,7 +5,7 @@
 # produce a small multiple plot to check gams fit
 # param: area_code, type: string, ONS geography code
 # param: base_year, type: int, base year for gams
-# returns: the filename where the plot has been saved to, rtype: string
+# returns: the filepath for a saved plot, rtype: string
 review_area_gams <- function(area_code, base_year) {
 
   path_self <- path_closure(area_code, base_year)
