@@ -86,26 +86,41 @@ mk_mye_to100 <- function(very_old, mye) {
 # current mye series has 296 lads matches ONS Apr 2023 - no recon. required
 mk_mye_compl <- function(mye, lad23, cty23, icb23) {
 
-  # # compile Countys
+  # pull names for lads
+  mye_lad <- mye |>
+    dplyr::filter(stringr::str_detect(area_code, "^E0[6789]")) |>
+    dplyr::left_join(
+      lad23, dplyr::join_by(area_code == lad23cd)
+    ) |>
+    dplyr::rename(area_name = lad23nm)
+
+  # Countys
   mye_cty <- cty23 |>
-    dplyr::left_join(mye, dplyr::join_by(lad23cd == area_code)) |>
-    dplyr::group_by(dplyr::across(starts_with("cty")), year, sex, age) |>
+    dplyr::left_join(
+      mye, dplyr::join_by(lad23cd == area_code)
+    ) |>
+    dplyr::group_by(
+      dplyr::across(starts_with("cty")),
+      year, sex, age
+    ) |>
     dplyr::summarise(pop = sum(pop)) |>
     dplyr::ungroup() |>
     dplyr::rename(area_code = cty23cd, area_name = cty23nm)
 
-  # # compile ICBs
+  # ICBs
   mye_icb <- icb23 |>
-    dplyr::left_join(mye, dplyr::join_by(lad23cd == area_code)) |>
+    dplyr::left_join(
+      mye, dplyr::join_by(lad23cd == area_code)
+    ) |>
     dplyr::group_by(
-      dplyr::across(tidyselect::starts_with("icb"))
-      , year, sex, age
+      dplyr::across(tidyselect::starts_with("icb")),
+      year, sex, age
     ) |>
     dplyr::summarise(pop = sum(pop)) |>
     dplyr::ungroup() |>
     dplyr::rename(area_code = icb23cd, area_name = icb23nm)
 
-  # # compile England
+  # England
   mye_eng <- mye |>
     dplyr::group_by(year, sex, age) |>
     dplyr::summarise(pop = sum(pop)) |>
@@ -117,5 +132,5 @@ mk_mye_compl <- function(mye, lad23, cty23, icb23) {
     )
 
   # combine
-  dplyr::bind_rows(mye, mye_cty, mye_icb, mye_eng)
+  dplyr::bind_rows(mye_lad, mye_cty, mye_icb, mye_eng)
 }
