@@ -2,9 +2,13 @@
 # assemble model results i.e., est. percent change in healtchare activity
 # between model baseline and model horizon year
 
+# TODO
+# treatment of omit hsagrps - maybe create a calling environemnt for running
+# the model and include in that so all fns can see it
 
-# get_demographic_chg() - treatment of omit hsagrps - create calling environemnt when run all this grp and incl once in there for all fns
-# get_hsa_chg()
+# functions ---
+# get_demographic_chg
+# get_hsa_chg
 
 # get_demographic_chg() ----
 # change in activity due to changes in population size and age structure
@@ -12,7 +16,9 @@
 # param: base_year, type: integer, model baseline
 # param: end_year, type: integer, model horizon
 # param: proj_id, type: string, population projection variant
-# returns:
+# returns: a dataframe of modeled activity in end year and percent change from
+# base year by hsagrp and sex
+# rtype: df
 get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
 
   path_self <- path_closure(area_code, base_year)
@@ -49,13 +55,17 @@ get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
 }
 
 # get_hsa_chg() ----
-# change in activity due to changes in population + HSA
+# change in activity due to changes in population + adjustement for changes in
+# health status
 # param: area_code, type: string, ONS geography code
 # param: base_year, type: integer, model baseline
 # param: end_year, type: integer, model horizon
 # param: proj_id, type: string, population projection variant
-# returns: a dataframe of modeled activity and percent change from base
-# year by hsagrp and sex, rtype: rtype: df (vector columns) ...
+# param: model_runs, type: integer, number of times to run model
+# param: rng_state, type: integer vector, RNG state
+# returns: a dataframe with a list column of modeled activity in end year by
+# hsagrp and sex
+# rtype: df (end_n = vector, length = model runs)
 get_hsa_chg <- function(
   area_code,
   base_year,
