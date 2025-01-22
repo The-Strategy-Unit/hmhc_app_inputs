@@ -1,18 +1,27 @@
 # README
-# create_obs_rt_tbl()
-# create_setting_gams()
-# create_model_rt_tbl()
-# create_area_gams()
-# run_area_gams()
-# create_obs_rt_tbl() - incl omit_hasgrps? - output csv joined to gams in review_gams() what happens if different?
-# create_setting_gams() - treatment of omit_hsagrps
-# create_setting_gams() - assumes baseline is equal to or after first year in projections - will probably be true, but?
-# create_setting_gams() - variant is hardcoded - again prob. makes sense
-# create_setting_gams() - gam fitting range hard coded
-# create_model_rt_tbl() - gam predict range hard coded
-# create_area_gams() - treatment of omit_hsagrps
+# create a set of GAMs (generalised additive models) that model the relationship
+# between age and activity, by sex, and by hsagrp.
+
+# TODO
+# create_obs_rt_tbl
+# incl. omit_hasgrps? (output csv joined to gams in review_gams() what happens if different?)
+# create_setting_gams
+# treatment of omit_hsagrps
+# assumes baseline is equal to or after first year in projections - will probably be true, but?
+# variant is hardcoded - again prob. makes sense
+# gam fitting age range hard coded
+# create_model_rt_tbl
+# gam predict age range hard coded
+# create_area_gams
+# treatment of omit_hsagrps
 # obs_rt_tbl.csv, model_rt_tbl.csv, hsa_gams.rds - hard coded file names saved out
 
+# functions ----
+# create_obs_rt_tbl
+# create_setting_gams
+# create_model_rt_tbl
+# create_area_gams
+# run_area_gams
 
 # create_obs_rt_tbl() ----
 # function for returning observed activity rates
