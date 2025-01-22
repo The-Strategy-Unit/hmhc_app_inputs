@@ -1,4 +1,52 @@
 # hmhc_app_inputs
+https://docs.ropensci.org/targets/reference/tar_repository_cas.html
+https://stackoverflow.com/questions/15170399/change-r-default-library-path-using-libpaths-in-rprofile-site-fails-to-work
+https://github.com/rstudio/renv/issues/1129
+https://books.ropensci.org/targets/dynamic.html
+
+
+### Population module
+Tasks:
+* Build a timeseries of population estimates for all areas (LADs, Countys, and ICBs),
+for years 2000 to 2023, by single year of age, for ages 0-100+.
+* Build a timeseries of population projections for all areas (LADs,
+Countys, and ICBs), for years 2018 to 2043, by single year of age, for ages 0-100+. Create a set of custom sub-national variant projections that mirror the complete set of national variant projections.
+
+Data sources:
+* ONS mid-year population estimates (NOMIS)
+* ONS estimates of the very old and centenarians
+* ONS sub-national population projections 2018b
+* ONS national population projections 2018b
+* Geographic codelists and lookups (ONS Open Geography Portal)
+
+Scripts:
+read_area_lookups
+read_icb_lookups
+helper_lookups
+
+read_npp_2018b
+read_snpp_2018b
+read_pop_very_old
+read_pop_mye
+
+build_mye
+build_custom_vars
+build_pop90
+build_pop100
+# We use the distribution for ages 90-100+ for England to approximate the
+# distribution in local areas. The only place this is used is to determine the
+# length of bars in the population pyramid. For modeling, the upper age group is
+# 90+, any higher and the variation in activity rates becomes excessive.
+# used as input to activity rates element in the app
+# "app_pop_90_inputs"
+
+# used as input to the model
+# app_vars_all |>
+#   pivot_wider(names_from = "year", values_from = "pop") |>
+#   group_by(area_code, area_name) |>
+#   group_walk(\(x, y) {
+#     write_rds(x, here("data", "2022", y$area_code, "pop_dat.rds"))
+#   })
 
 
 ## Activity data inputs
