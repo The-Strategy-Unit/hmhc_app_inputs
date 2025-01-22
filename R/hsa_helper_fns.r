@@ -53,19 +53,22 @@ create_demographic_factors <- function(
 # param: setting, type: character vector
 # returns: a dataframe of activity data, rtype: df
 load_activity_data <- function(
-  area_code, base_year, setting = NULL
+  area_code,
+  base_year,
+  # default to all 3 main acute hospital settings
+  setting = c("edc", "apc", "opc")
 ) {
 
-  if (!is.null(setting)) {
-    x <- setting
-  } else {
-    x <- c("edc", "apc", "opc")
-  }
+  setting <- rlang::arg_match(
+    setting,
+    values = c("edc", "apc", "opc"),
+    multiple = TRUE
+  )
 
   path_self <- path_closure(area_code, base_year)
 
   x <- purrr::map(
-    x, \(x) {
+    setting, \(x) {
       readr::read_rds(
         path_self(paste0(x, "_dat.rds"))
       )
