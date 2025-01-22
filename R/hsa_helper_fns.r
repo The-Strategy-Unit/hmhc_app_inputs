@@ -1,19 +1,19 @@
 # README
 # helper fns to help with modeling health status adjustment
 
-# path_closure()
-# create_demographic_factors()
-# load_activity_data()
-# load_life_expectancy()
-# get_ex_id()
-# random_split_norm()
-# create_hsa_params()
-# create_hsa_mode()
-# model_rt_hsa_ages()
-# hsa_age_range hard coded
+# TODO
+# load_life_expectancy - hsa_age_range hard coded
 
-
-
+# functions ----
+# path_closure
+# create_demographic_factors
+# load_activity_data
+# load_life_expectancy
+# get_ex_id
+# random_split_norm
+# create_hsa_params
+# create_hsa_mode
+# model_rt_hsa_ages
 
 # path_closure() ----
 # helper closure function for returning file paths
