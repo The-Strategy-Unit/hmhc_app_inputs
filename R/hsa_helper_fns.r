@@ -246,38 +246,50 @@ model_rt_hsa_ages <- function(area_code, base_year, adjusted_ages) {
   list(f = f, m = m)
 }
 
-
-
-
-# ADDTHIS
-# predict_activity_interpolate() ----
-# predict activity rates by interpolating the gams (as oppose to prediction for
-# new values) for health status adjusted ages (do this n times, where n =
-# model_runs)
+# interp_rt_hsa_ages() ----
+# model activity rates using gams for hsa ages (interpolate as oppose to
+# predict, interpolation is faster and any difference should be small)
+# do this n times, where n = model_runs
+# param: area_code, type: string, ONS geography code
+# param: base_year, type: int, model baseline
 # param: adjusted_ages, type: list of 2 (f/m), list of 36 (ages 55-90), vector
 # (length = model runs) of health status adjusted ages
-# returns: a list of predicted activity rates for supplied adjusted ages,
-# rtype: list of 2(f/m), list of 16 (hsagrps), list of 36 (ages 55-90), vector
+# returns: a list of modeled activity rates for supplied adjusted ages,
+# rtype: list of 2 (f/m), list of 16 (hsagrps), list of 36 (ages 55-90), vector
 # (length = model runs)
-# predict_activity_interpolate <- function(path_self, adjusted_ages) {
+interp_rt_hsa_ages <- function(area_code, base_year, adjusted_ages) {
 
-#   act_df <- load_activity_rt_tbl(path_self) |>
-#     group_by(hsagrp, sex) |>
-#     nest(.key = "data") |>
-#     mutate(
-#       user_approxfun = map(data, \(x) {
-#         approxfun(x = x$age, y = x$gam_rt, method = "linear", rule = 2)
-#       })
-#     )
+  path_self <- path_closure(area_code, base_year)
 
-#   act_df <- split(act_df, ~sex)
+  act_df <- readr::read_csv(
+    here::here(
+      path_self("model_rt_tbl.csv")
+    )
+  ) |>
+    dplyr::group_by(setting, hsagrp, sex) |>
+    tidyr::nest(.key = "data") |>
+    dplyr::mutate(
+      user_approxfun = purrr::map(data, \(x) {
+        approxfun(x = x$age, y = x$gam_rt, method = "linear", rule = 2)
+      })
+    )
 
-#   f <- map(act_df$f$user_approxfun, \(x) {
-#     map_depth(adjusted_ages[[1]], 2, \(y) x(v = y))
-#   })
-#   m <- map(act_df$m$user_approxfun, \(x) {
-#     map_depth(adjusted_ages[[2]], 2, \(y) x(v = y))
-#   })
+  act_df <- split(act_df, ~ sex)
 
-#   f <- map_depth(f, 2, unlist, use.names = FALSE)
-#   m <- map_depth(m, 2, unlist, use.names = FALSE)
+  f <- purrr::map(
+    act_df$f$user_approxfun, \(x) {
+      purrr::map_depth(adjusted_ages[[1]], 2, \(y) x(v = y))
+    }
+  )
+
+  m <- purrr::map(
+    act_df$m$user_approxfun, \(x) {
+      purrr::map_depth(adjusted_ages[[2]], 2, \(y) x(v = y))
+    }
+  )
+
+  f <- purrr::map_depth(f, 2, unlist, use.names = FALSE)
+  m <- purrr::map_depth(m, 2, unlist, use.names = FALSE)
+
+  list(f = f, m = m)
+}

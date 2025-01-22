@@ -78,7 +78,7 @@ get_hsa_factors <- function(
   if (method == "gams") {
     p <- model_rt_hsa_ages(area_code, base_year, adjusted_ages)
   } else {
-    p <- model_rt_hsa_ages(area_code, base_year, adjusted_ages)
+    p <- interp_rt_hsa_ages(area_code, base_year, adjusted_ages)
   }
 
   # compile hsa factors
