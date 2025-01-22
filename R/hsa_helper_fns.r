@@ -50,7 +50,7 @@ create_demographic_factors <- function(
 # load activity data for baseline year
 # param: area_code, type: string, ONS geography code
 # param: base_year, type: integer, model baseline
-# param: setting, type: character vector
+# param: setting, type: string, settings, one or more of 'edc', 'apc', and 'opc'
 # returns: a dataframe of activity data, rtype: df
 load_activity_data <- function(
   area_code,
