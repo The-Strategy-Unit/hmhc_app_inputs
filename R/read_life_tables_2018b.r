@@ -28,6 +28,7 @@ prep_life_tbl <- function(path) {
       ) |>
       dplyr::mutate(
         sex = tolower(stringr::str_extract(x, "Female|Male")),
+        sex = stringr::str_sub(sex, 1L, 1L),
         type = stringr::str_extract(x, "period|cohort"),
         year = as.integer(year)
       )
