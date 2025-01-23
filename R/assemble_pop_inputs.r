@@ -23,7 +23,7 @@ app_vars <- c(
 
 # lookup id to identify variant in the app
 lookup_variant_id <- tibble::tribble(
-  ~"proj_id", ~"vars_id",
+  ~ "proj_id", ~ "vars_id",
   "principal_proj", "v1", # 1
   "hpp", "v2", # 2
   "lpp", "v3", # 3
