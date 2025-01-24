@@ -33,7 +33,8 @@ tar_source(
     here::here("R", "apc_prep_functions.r"),
     here::here("R", "opc_read_functions.r"),
     here::here("R", "opc_prep_functions.r"),
-    here::here("R", "assemble_pop_inputs.r") # keep filename?
+    here::here("R", "assemble_pop_inputs.r"), # keep filename?
+    here::here("R", "assemble_activity_inputs.r")
   )
 )
 
@@ -163,7 +164,11 @@ list(
   # build app files (JSON)
   #############################################################################
   # branch over df grouped by area_code
-  tarchetypes::tar_group_by(df_pop_data, build_pop_data(df_mye_series, snpp_series_to100), area_code),
-  tar_target(df, format_pop_data_json(df_pop_data), pattern = map(df_pop_data))
+  tarchetypes::tar_group_by(df_pop_data, build_pop_data(df_mye_series_to100, snpp_series_to100), area_code),
+  tar_target(dfpop, format_pop_data_json(df_pop_data), pattern = map(df_pop_data)),
+  tar_target(df_obs_rts, get_observed_profiles(df_mye_series_to90, df_prep_edc, df_prep_apc, df_prep_opc)),
+  tar_target(df_model_rts, get_modeled_profiles(area_codes, base_year = 2022)),
+  tarchetypes::tar_group_by(df_rts, combine_profiles(df_obs_rts, df_model_rts), area_code),
+  tar_target(dfrts, format_profiles_json(df_rts), pattern = map(df_rts))
 )
 # nolint end: line_length_linter
