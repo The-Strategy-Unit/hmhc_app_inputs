@@ -128,7 +128,8 @@ list(
   #############################################################################
   tar_target(df_mye_to90, mk_mye_to90(df_mye)),
   tar_target(df_mye_to100, mk_mye_to100(df_very_old, df_mye_to90)),
-  tar_target(df_mye_series, mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)),
+  tar_target(df_mye_series_to90, mk_mye_compl(df_mye_to90, df_raw_lad23, df_raw_cty23, df_icb23)),
+  tar_target(df_mye_series_to100, mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)),
   #############################################################################
   # build population projection series
   #############################################################################
