@@ -63,6 +63,9 @@ get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
 # param: proj_id, type: string, population projection variant
 # param: model_runs, type: integer, number of times to run model
 # param: rng_state, type: integer vector, RNG state
+# param: method, type: string, method for obtaining modeled activity rates for
+# hsa ages, either 'interp' or 'gams'
+# param: mode, type: bool, monte carlo or modal value
 # returns: a dataframe with a list column of modeled activity in end year by
 # hsagrp and sex
 # rtype: df (end_n = vector, length = model runs)
@@ -73,7 +76,8 @@ get_hsa_chg <- function(
   proj_id,
   model_runs,
   rng_state,
-  method = c("interp", "gams")
+  method = c("interp", "gams"),
+  mode = FALSE
 ) {
 
   method <- rlang::arg_match(method, values = c("interp", "gams"))
@@ -101,62 +105,108 @@ get_hsa_chg <- function(
     area_code, base_year, end_year, proj_id
   )
 
-  hsa <- get_hsa_factors(
+  hsa_fac <- get_hsa_factors(
     area_code, base_year, end_year, proj_id, model_runs, rng_state,
-    method = method
+    method = method, mode = mode
   )
 
-  act |>
-    dplyr::left_join(demo_fac, dplyr::join_by(sex, age)) |>
-    dplyr::left_join(hsa, dplyr::join_by(hsagrp, sex, age)) |>
-    # replace missing hsa factors (empty lists) with 1
-    dplyr::mutate(
-      f = purrr::map_if(
-        f,
-        # predicate function
-        .p = \(x) length(x) == 0,
-        # where .p evaluates to TRUE then
-        .f = \(x) c(rep(1, model_runs))
-      )
-    ) |>
-    dplyr::mutate(
-      f = purrr::map2(
-        f, demo_fac, \(x, y) {
-          x * y
-        }
-      )
-    ) |>
-    dplyr::mutate(
-      end_n = purrr::map2(
-        n, f, \(x, y) {
-          x * y
-        }
-      )
-    ) |>
-    dplyr::select(hsagrp, sex, age, n, end_n) |>
-    dplyr::group_by(hsagrp, sex) |>
-    tidyr::nest(.key = "data") |>
-    dplyr::ungroup() |>
-    dplyr::mutate(
-      base_n = purrr::map_dbl(
-        data, \(x) {
-          sum(x$n)
-        }
-      )
-    ) |>
-    dplyr::mutate(
-      end_n = purrr::map(
-        data, \(x) {
-          rowSums(sapply(x$end_n, unlist))
-        }
-      )
-    ) |>
-    dplyr::mutate(
-      end_p = purrr::map2(
-        base_n, end_n, \(x, y) {
-          y / x
-        }
-      )
-    ) |>
-    dplyr::select(hsagrp, sex, base_n, end_n)
+  if (isTRUE(mode)) {
+    x <- act |>
+      dplyr::left_join(
+        demo_fac,
+        dplyr::join_by(sex, age)
+      ) |>
+      dplyr::left_join(
+        hsa_fac,
+        dplyr::join_by(area_code, setting, hsagrp, sex, age)
+      ) |>
+      # replace missing hsa factors (NA values) with 1
+      dplyr::mutate(f = dplyr::if_else(is.na(f), 1, f)) |>
+      dplyr::mutate(f = f * demo_fac) |>
+      dplyr::mutate(end_n = n * f) |>
+      dplyr::select(setting, hsagrp, sex, age, n, end_n) |>
+      dplyr::group_by(setting, hsagrp, sex) |>
+      tidyr::nest(.key = "data") |>
+      dplyr::ungroup() |>
+      dplyr::mutate(
+        base_n = purrr::map_dbl(
+          data, \(x) {
+            sum(x$n)
+          }
+        )
+      ) |>
+      dplyr::mutate(
+        end_n = purrr::map_dbl(
+          data, \(x) {
+            sum(x$end_n)
+          }
+        )
+      ) |>
+      dplyr::mutate(end_p = end_n / base_n) |>
+      dplyr::select(setting, hsagrp, sex, base_n, end_n)
+
+  } else {
+
+    x <- act |>
+      dplyr::left_join(
+        demo_fac,
+        dplyr::join_by(sex, age)
+      ) |>
+      dplyr::left_join(
+        hsa_fac,
+        dplyr::join_by(area_code, setting, hsagrp, sex, age)
+      ) |>
+      # replace missing hsa factors (empty lists) with 1
+      dplyr::mutate(
+        f = purrr::map_if(
+          f,
+          # predicate function
+          .p = \(x) length(x) == 0,
+          # where .p evaluates to TRUE then
+          .f = \(x) c(rep(1, model_runs))
+        )
+      ) |>
+      dplyr::mutate(
+        f = purrr::map2(
+          f, demo_fac, \(x, y) {
+            x * y
+          }
+        )
+      ) |>
+      dplyr::mutate(
+        end_n = purrr::map2(
+          n, f, \(x, y) {
+            x * y
+          }
+        )
+      ) |>
+      dplyr::select(setting, hsagrp, sex, age, n, end_n) |>
+      dplyr::group_by(setting, hsagrp, sex) |>
+      tidyr::nest(.key = "data") |>
+      dplyr::ungroup() |>
+      dplyr::mutate(
+        base_n = purrr::map_dbl(
+          data, \(x) {
+            sum(x$n)
+          }
+        )
+      ) |>
+      dplyr::mutate(
+        end_n = purrr::map(
+          data, \(x) {
+            rowSums(sapply(x$end_n, unlist))
+          }
+        )
+      ) |>
+      dplyr::mutate(
+        end_p = purrr::map2(
+          base_n, end_n, \(x, y) {
+            y / x
+          }
+        )
+      ) |>
+      dplyr::select(setting, hsagrp, sex, base_n, end_n)
+  }
+
+  return(x)
 }

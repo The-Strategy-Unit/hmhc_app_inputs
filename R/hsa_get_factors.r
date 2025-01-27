@@ -12,8 +12,9 @@
 # param: proj_id, type: string, population projection variant
 # param: model_runs, type: integer, number of times to run model
 # param: rng_state, type: integer vector, RNG state
-# param: method, type : string, method for obtaining modeled activity rates for
+# param: method, type: string, method for obtaining modeled activity rates for
 # hsa ages, either 'interp' or 'gams'
+# param: mode, type: bool, monte carlo or modal value
 # returns: df, with list column of hsa factors,
 # rtype: df, (f = vector, length = model runs)
 get_hsa_factors <- function(
