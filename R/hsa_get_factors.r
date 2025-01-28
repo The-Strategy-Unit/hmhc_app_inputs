@@ -81,6 +81,14 @@ get_hsa_factors <- function(
     show_col_types = FALSE
   )
 
+  # add projection id and end year
+  chron_rt <- chron_rt |>
+    dplyr::mutate(
+      id = proj_id,
+      end_year = end_year,
+      .after = area_code
+    )
+
   chron_rt <- split(
     chron_rt |>
       dplyr::filter(age %in% hsa_age_range),
@@ -95,7 +103,7 @@ get_hsa_factors <- function(
 
   # compile hsa factors
   f <- chron_rt$f |>
-    dplyr::group_by(hsagrp) |>
+    dplyr::group_by(area_code, end_year, id, setting, hsagrp) |>
     tidyr::nest(.key = "data") |>
     dplyr::ungroup() |>
     dplyr::mutate(p = p$f) |>
@@ -110,7 +118,7 @@ get_hsa_factors <- function(
     dplyr::select(-gam_rt, -p)
 
   m <- chron_rt$m |>
-    dplyr::group_by(hsagrp) |>
+    dplyr::group_by(area_code, end_year, id, setting, hsagrp) |>
     tidyr::nest(.key = "data") |>
     dplyr::ungroup() |>
     dplyr::mutate(p = p$m) |>

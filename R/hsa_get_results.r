@@ -40,6 +40,10 @@ get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
   act <- load_activity_data(area_code, base_year) |>
     dplyr::filter(!hsagrp %in% omit_hsagrps$omit)
 
+  # add end year
+  act <- act |>
+    dplyr::mutate(end_year = end_year)
+
   demo_fac <- create_demographic_factors(
     area_code, base_year, end_year, proj_id
   )
@@ -47,10 +51,9 @@ get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
   act |>
     dplyr::left_join(demo_fac, dplyr::join_by(sex, age)) |>
     dplyr::mutate(end_n = n * demo_fac) |>
-    dplyr::group_by(id, hsagrp, sex) |>
+    dplyr::group_by(area_code, id, end_year, setting, hsagrp, sex) |>
     dplyr::summarise(base_n = sum(n), end_n = sum(end_n)) |>
     dplyr::ungroup() |>
-    dplyr::mutate(end_p = end_n / base_n) |>
     dplyr::arrange(hsagrp, sex)
 }
 
@@ -101,6 +104,10 @@ get_hsa_chg <- function(
   act <- load_activity_data(area_code, base_year) |>
     dplyr::filter(!hsagrp %in% omit_hsagrps$omit)
 
+  # add end year
+  act <- act |>
+    dplyr::mutate(end_year = end_year)
+
   demo_fac <- create_demographic_factors(
     area_code, base_year, end_year, proj_id
   )
@@ -118,14 +125,14 @@ get_hsa_chg <- function(
       ) |>
       dplyr::left_join(
         hsa_fac,
-        dplyr::join_by(area_code, setting, hsagrp, sex, age)
+        dplyr::join_by(area_code, id, end_year, setting, hsagrp, sex, age)
       ) |>
       # replace missing hsa factors (NA values) with 1
       dplyr::mutate(f = dplyr::if_else(is.na(f), 1, f)) |>
       dplyr::mutate(f = f * demo_fac) |>
       dplyr::mutate(end_n = n * f) |>
-      dplyr::select(setting, hsagrp, sex, age, n, end_n) |>
-      dplyr::group_by(setting, hsagrp, sex) |>
+      dplyr::select(area_code, id, end_year, setting, hsagrp, sex, age, n, end_n) |>
+      dplyr::group_by(area_code, id, end_year, setting, hsagrp, sex) |>
       tidyr::nest(.key = "data") |>
       dplyr::ungroup() |>
       dplyr::mutate(
@@ -143,7 +150,7 @@ get_hsa_chg <- function(
         )
       ) |>
       dplyr::mutate(end_p = end_n / base_n) |>
-      dplyr::select(setting, hsagrp, sex, base_n, end_n)
+      dplyr::select(area_code, id, end_year, setting, hsagrp, sex, base_n, end_n)
 
   } else {
 
@@ -154,7 +161,7 @@ get_hsa_chg <- function(
       ) |>
       dplyr::left_join(
         hsa_fac,
-        dplyr::join_by(area_code, setting, hsagrp, sex, age)
+        dplyr::join_by(area_code, id, end_year, setting, hsagrp, sex, age)
       ) |>
       # replace missing hsa factors (empty lists) with 1
       dplyr::mutate(
@@ -180,8 +187,8 @@ get_hsa_chg <- function(
           }
         )
       ) |>
-      dplyr::select(setting, hsagrp, sex, age, n, end_n) |>
-      dplyr::group_by(setting, hsagrp, sex) |>
+      dplyr::select(area_code, id, end_year, setting, hsagrp, sex, age, n, end_n) |>
+      dplyr::group_by(area_code, id, end_year, setting, hsagrp, sex) |>
       tidyr::nest(.key = "data") |>
       dplyr::ungroup() |>
       dplyr::mutate(
@@ -205,7 +212,7 @@ get_hsa_chg <- function(
           }
         )
       ) |>
-      dplyr::select(setting, hsagrp, sex, base_n, end_n)
+      dplyr::select(area_code, id, end_year, setting, hsagrp, sex, base_n, end_n)
   }
 
   return(x)
