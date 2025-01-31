@@ -76,7 +76,6 @@ create_model_rt_df <- function(gams, filenm) {
 
   # save modeled values
   gams |>
-    tidyr::unnest(gams) |>
     dplyr::mutate(age = list(gam_age_range)) |>
     # predict.gam returns an array (convert to vector)
     dplyr::mutate(
