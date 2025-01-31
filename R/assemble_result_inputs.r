@@ -26,6 +26,17 @@ source(here::here("R", "hsa_helper_fns.r"))
 # combine_results
 # format_model_json
 
+# ***********************
+# test or production ----
+# ***********************
+test <- TRUE
+
+if (!rlang::is_logical(test)) {
+  stop("test must be of type logical")
+} else {
+  area_codes <- test_areas
+}
+
 # compute histogram binning using pretty version of Freedman Diaconis rule ----
 pretty_fd <- function(x) {
 

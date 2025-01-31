@@ -15,6 +15,16 @@ source(here::here("R", "hsa_create_gams.r")) # run_area_gams()
 # combine_profiles
 # format_profiles_json
 
+# ***********************
+# test or production ----
+# ***********************
+test <- TRUE
+
+if (!rlang::is_logical(test)) {
+  stop("test must be of type logical")
+} else {
+  area_codes <- test_areas
+}
 
 # run_gams_all_areas ----
 run_gams_all_areas <- function(area_codes, base_year) {
