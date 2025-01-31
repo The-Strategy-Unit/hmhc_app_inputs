@@ -41,17 +41,15 @@ create_obs_rt_tbl <- function(
   act_df <- dplyr::bind_rows(act_ls)
 
   # # load population data
-  # pop_df <- readr::read_rds(
-  #   path_self(
-  #     filename = "pop_dat.rds"
-  #   )
-  # )
-
-  # # select population projection variant
-  # pop_df <- pop_df |>
-  #   dplyr::filter(id == "principal_proj") |>
-  #   dplyr::select(id, sex, age, !!as.name(base_year)) |>
-  #   dplyr::rename(base_year = !!as.name(base_year))
+  pop_df <- readr::read_rds(
+    path_self(
+      filename = "pop_dat.rds"
+    )
+  ) |>
+    # always princiapal variant here
+    dplyr::filter(id == "principal_proj") |>
+    dplyr::select(id, sex, age, !!as.name(base_year)) |>
+    dplyr::rename(base_year = !!as.name(base_year))
 
   act_df <- act_df |>
     dplyr::left_join(pop_df, dplyr::join_by(sex, age))
@@ -126,16 +124,15 @@ create_area_gams <- function(
   act_df <- dplyr::bind_rows(act_ls)
 
   # load population data
-  # pop_df <- readr::read_rds(
-  #   path_self(
-  #     filename = "pop_dat.rds"
-  #   )
-  # )
-    # select population projection variant
-  # pop_df <- pop_df |>
-  #   dplyr::filter(id == "principal_proj") |>
-  #   dplyr::select(id, sex, age, !!as.name(base_year)) |>
-  #   dplyr::rename(base_year = !!as.name(base_year))
+  pop_df <- readr::read_rds(
+    path_self(
+      filename = "pop_dat.rds"
+    )
+  ) |>
+    # always princiapal variant here
+    dplyr::filter(id == "principal_proj") |>
+    dplyr::select(id, sex, age, !!as.name(base_year)) |>
+    dplyr::rename(base_year = !!as.name(base_year))
 
   # make explicit missing age values
   act_df <- act_df |>
