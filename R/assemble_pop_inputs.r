@@ -5,41 +5,6 @@
 # build_pop_data
 # format_pop_data_json
 
-# keeping these here for now ----
-# projection variants for app
-app_vars <- c(
-  "hpp", # 1
-  "lpp", # 2
-  "php", # 3
-  "plp", # 4
-  "hhh", # 5
-  "lll", # 6
-  "lhl", # 7
-  "hlh", # 8
-  "principal_proj", # 9
-  "var_proj_high_intl_migration", # 10
-  "var_proj_low_intl_migration" # 11
-)
-
-# lookup id to identify variant in the app
-lookup_variant_id <- tibble::tribble(
-  ~ "proj_id", ~ "vars_id",
-  "principal_proj", "v1", # 1
-  "hpp", "v2", # 2
-  "lpp", "v3", # 3
-  "php", "v4", # 4
-  "plp", "v5", # 4
-  "var_proj_high_intl_migration", "v6", # 6
-  "var_proj_low_intl_migration", "v7", # 7
-  "hhh", "v8", # 8
-  "lll", "v9", # 9
-  "hlh", "v10", # 10
-  "lhl", "v11" # 11
-)
-
-# historic population estimates take level = v0
-levels_variant_id <- c(paste0("v", 0:11))
-
 # build_pop_data() ----
 build_pop_data <- function(mye, snpp, first_proj_yr = 2023) {
 

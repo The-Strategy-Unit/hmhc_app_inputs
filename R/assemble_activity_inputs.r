@@ -15,64 +15,6 @@ source(here::here("R", "hsa_create_gams.r")) # run_area_gams()
 # combine_profiles
 # format_profiles_json
 
-# keeping these here for now ----
-# hsa groups for app
-app_hsagrps <- c(
-  "amb", # 1
-  "walkin", # 2
-  "daycase_n", # 3
-  "emer_n", # 4
-  "emer_bds", # 5
-  "ordelec_n", # 6
-  "ordelec_bds", # 7
-  "non-surg_first", # 8
-  "non-surg_fup", # 9
-  "non-surg_proc", # 10
-  "surg_first", # 11
-  "surg_fup", # 12
-  "surg_proc" #13
-)
-
-# hsa group levels
-hsagrp_levels <- c(
-  "walkin", # 1
-  "amb", # 2
-  "emer_n", # 3
-  "emer_bds", # 4
-  "daycase_n", # 5
-  "ordelec_n", # 6
-  "ordelec_bds", # 7
-  "surg_proc", # 8
-  "non-surg_proc", # 9
-  "surg_first", # 10
-  "non-surg_first", # 11
-  "surg_fup", # 12
-  "non-surg_fup" # 13
-)
-
-# hsa group labels
-hsagrp_labels <- tibble::tribble(
-  ~ "hsagrp", ~ "hsagrp_lab",
-  "amb", "Ambulance arrivals", # 1
-  "walkin", "Walk-in arrivals", # 2
-  "daycase_n", "Daycases", # 3
-  "emer_n", "Unplanned admissions", # 4
-  "emer_bds", "Unplanned bed days", # 5
-  "ordelec_n", "Elective admissions", # 6
-  "ordelec_bds", "Elective bed days", # 7
-  "non-surg_first", "First app. (non-surgical specialties)", # 8
-  "non-surg_fup", "Follow-up app. (non-surgical specialties)", # 9
-  "non-surg_proc", "Procedure (non-surgical specialties)", # 10
-  "surg_first", "First app. (surgical specialties)", # 11
-  "surg_fup", "Follow-up app. (surgical specialties)", # 12
-  "surg_proc", "Procedure (surgical specialties)" # 13
-)
-
-# areas for app ----
-area_codes <- readr::read_csv(
-  here::here("data", "app_input_files", "area_names_and_codes.csv")
-) |>
-  dplyr::pull(cd)
 
 # run_gams_all_areas ----
 run_gams_all_areas <- function(area_codes, base_year) {

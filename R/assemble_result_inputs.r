@@ -26,101 +26,6 @@ source(here::here("R", "hsa_helper_fns.r"))
 # combine_results
 # format_model_json
 
-# keeping these here for now ----
-# proj id to variant id
-lookup_variant_id <- tibble::tribble(
-  ~ "proj_id", ~ "variant_id",
-  "principal_proj", "v1",
-  "hpp", "v2",
-  "lpp", "v3",
-  "php", "v4",
-  "plp", "v5",
-  "var_proj_high_intl_migration", "v6",
-  "var_proj_low_intl_migration", "v7",
-  "hhh", "v8",
-  "lll", "v9",
-  "hlh", "v10",
-  "lhl", "v11"
-)
-
-# proj id levels
-proj_id_levels <- lookup_variant_id$proj_id
-
-# hsa group levels
-hsagrp_levels <- c(
-  "walkin", # 1
-  "amb", # 2
-  "emer_n", # 3
-  "emer_bds", # 4
-  "daycase_n", # 5
-  "ordelec_n", # 6
-  "ordelec_bds", # 7
-  "surg_proc", # 8
-  "non-surg_proc", # 9
-  "surg_first", # 10
-  "non-surg_first", # 11
-  "surg_fup", # 12
-  "non-surg_fup" # 13
-)
-
-# hsa group labels
-lookup_hsagrp_label <- tibble::tribble(
-  ~ "hsagrp", ~ "hsagrp_label",
-  "amb", "Ambulance arrivals", # 1
-  "walkin", "Walk-in arrivals", # 2
-  "daycase_n", "Daycases", # 3
-  "emer_n", "Unplanned admissions", # 4
-  "emer_bds", "Unplanned bed days", # 5
-  "ordelec_n", "Elective admissions", # 6
-  "ordelec_bds", "Elective bed days", # 7
-  "non-surg_first", "First app. (non-surgical specialties)", # 8
-  "non-surg_fup", "Follow-up app. (non-surgical specialties)", # 9
-  "non-surg_proc", "Procedure (non-surgical specialties)", # 10
-  "surg_first", "First app. (surgical specialties)", # 11
-  "surg_fup", "Follow-up app. (surgical specialties)", # 12
-  "surg_proc", "Procedure (surgical specialties)" # 13
-)
-
-# run models for these projection variants
-app_variants <- c(
-  "hpp", # 1
-  "lpp", # 2
-  "php", # 3
-  "plp", # 4
-  "hhh", # 5
-  "lll", # 6
-  "lhl", # 7
-  "hlh", # 8
-  "principal_proj", # 9
-  "var_proj_high_intl_migration", # 10
-  "var_proj_low_intl_migration" # 11
-)
-
-# keep models for these hsagrps
-app_hsagrps <- c(
-  "amb", # 1
-  "walkin", # 2
-  "daycase_n", # 3
-  "emer_n", # 4
-  "emer_bds", # 5
-  "ordelec_n", # 6
-  "ordelec_bds", # 7
-  "non-surg_first", # 8
-  "non-surg_fup", # 9
-  "non-surg_proc", # 10
-  "surg_first", # 11
-  "surg_fup", # 12
-  "surg_proc" #13
-)
-
-# for testing
-test_areas <- c(
-  "E08000026",
-  "E07000235",
-  "E09000030",
-  "E92000001"
-)
-
 # compute histogram binning using pretty version of Freedman Diaconis rule ----
 pretty_fd <- function(x) {
 
@@ -248,14 +153,6 @@ format_model_json <- function(df) {
     )
   )
 }
-
-# run models for these areas ----
-area_codes <- readr::read_csv(
-  here::here("data", "app_input_files", "area_names_and_codes.csv")
-) |>
-  dplyr::pull(cd)
-
-area_codes <- test_areas
 
 # model parameters ----
 # 360 areas x 11 variants x 4 horizons = 15,840 models
