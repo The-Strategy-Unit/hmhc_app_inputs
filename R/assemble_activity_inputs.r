@@ -34,41 +34,14 @@ run_gams_all_areas <- function(area_codes, base_year) {
     }
   )
 }
-# run_gams_all_areas(area_codes, 2022)
 
 # get_observed_profiles ----
-get_observed_profiles <- function(
-  df_mye_series_to90, df_prep_edc, df_prep_apc, df_prep_opc, base_year = 2022
-) {
-
-  pop_df <- df_mye_series_to90 |>
-    dplyr::filter(year == base_year)
-
-  act_df <- dplyr::bind_rows(df_prep_edc, df_prep_apc, df_prep_opc)
-
-  act_df |>
-    dplyr::select(-tar_group) |>
-    dplyr::filter(hsagrp %in% app_hsagrps) |>
-    dplyr::left_join(
-      pop_df,
-      dplyr::join_by(area_code, area_name, sex, age)
-    ) |>
-    dplyr::mutate(urt = n / pop) |>
-    dplyr::left_join(
-      hsagrp_labels,
-      dplyr::join_by(hsagrp)
-    ) |>
-    dplyr::mutate(hsagrp = factor(hsagrp, levels = hsagrp_levels)) |>
-    dplyr::arrange(area_code, area_name, hsagrp)
-}
-
-# get_modeled_profiles ----
-get_modeled_profiles <- function(area_codes, base_year) {
+get_observed_profiles <- function(area_codes, base_year) {
   profiles_ls <- purrr::map(
     area_codes, \(x) {
       path_self <- path_closure(x, base_year)
       readr::read_csv(
-        path_self("model_rt_tbl.csv"),
+        path_self("model_rt_df.csv"),
         show_col_types = FALSE
       )
     }
@@ -77,17 +50,38 @@ get_modeled_profiles <- function(area_codes, base_year) {
   dplyr::bind_rows(profiles_ls)
 }
 
-combine_profiles <- function(df_obs_rt, df_model_rt) {
-  df_obs_rt |>
+# get_modeled_profiles ----
+get_modeled_profiles <- function(area_codes, base_year) {
+  profiles_ls <- purrr::map(
+    area_codes, \(x) {
+      path_self <- path_closure(x, base_year)
+      readr::read_csv(
+        path_self("model_rt_df.csv"),
+        show_col_types = FALSE
+      )
+    }
+  )
+
+  dplyr::bind_rows(profiles_ls)
+}
+
+# combine_profiles ----
+combine_profiles <- function(obs_rt_df, model_rt_df) {
+  obs_rt_df |>
     dplyr::left_join(
-      df_model_rt |>
+      model_rt_df |>
         dplyr::rename(s = gam_rt),
       dplyr::join_by(area_code, setting, hsagrp, sex, age)
     ) |>
-    dplyr::select(area_code, setting, hsagrp, hsagrp_lab, sex, age, urt, s) |>
-    dplyr::rename(group = hsagrp, label = hsagrp_lab)
+    dplyr::left_join(
+      lookup_hsagrp_label,
+      dplyr::join_by(hsagrp)
+    ) |>
+    dplyr::select(area_code, setting, hsagrp, hsagrp_label, sex, age, urt, s) |>
+    dplyr::rename(group = hsagrp, label = hsagrp_label)
 }
 
+# format_profiles_json ----
 format_profiles_json <- function(df_rts) {
 
   df_json <- df_rts |>
