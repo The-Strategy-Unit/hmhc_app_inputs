@@ -13,8 +13,8 @@
 # param: area_code, type: string, ONS geography code
 # param: base_year, type: int, base year for gams
 # param: setting, type: string, setting, one or more of 'edc', 'apc', and 'opc'
-# returns: the filepath of the saved df, rtype: string
-create_obs_rt_tbl <- function(
+# returns: the filepath for a saved df, rtype: string
+create_obs_rt_df <- function(
   area_code,
   base_year,
   # default to all 3 main acute hospital settings
@@ -170,7 +170,7 @@ create_area_gams <- function(
     dplyr::ungroup() |>
     dplyr::select(area_code, setting, hsagrp, sex, data, gams)
 
-  create_model_rt_tbl(
+  create_model_rt_df(
     gams,
     filenm = path_self("model_rt_df.csv")
   )
@@ -184,7 +184,7 @@ create_area_gams <- function(
 # param: base_year, type: int, base year for gams
 # param: setting, type: string, setting, one or more of 'edc', 'apc', or 'opc'
 # param: omit_hsagrps, type: ???,
-# returns: the filepath of the saved gams, rtype: string
+# returns: the filepath for saved gams, rtype: string
 run_area_gams <- function(
   area_code,
   base_year,
