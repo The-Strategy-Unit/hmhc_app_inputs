@@ -145,11 +145,9 @@ create_area_gams <- function(
     tidyr::complete(tidyr::nesting(setting, hsagrp, sex), age = 0:90) |>
     dplyr::mutate(dplyr::across(n, \(x) replace(x, is.na(x), 0)))
 
-  # fix age range for fitting gams
+  # limit gams to 18+
   act_df <- act_df |>
     dplyr::filter(age >= 18)
-  act_df <- act_df |>
-    dplyr::filter(age <= 90)
 
   act_df <- act_df |>
     dplyr::left_join(pop_df, dplyr::join_by(sex, age))
