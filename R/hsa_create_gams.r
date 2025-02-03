@@ -18,12 +18,12 @@ create_obs_rt_df <- function(
   area_code,
   base_year,
   # default to all 3 main acute hospital settings
-  setting = c("edc", "apc", "opc")
+  setting = c("apc", "edc", "opc")
 ) {
 
   setting <- rlang::arg_match(
     setting,
-    values = c("edc", "apc", "opc"),
+    values = c("apc", "edc", "opc"),
     multiple = TRUE
   )
 
@@ -99,13 +99,13 @@ create_area_gams <- function(
   area_code,
   base_year,
   # default to all 3 main acute hospital settings
-  setting = c("edc", "apc", "opc"),
+  setting = c("apc", "edc", "opc"),
   omit_hsagrps = NULL
 ) {
 
   setting <- rlang::arg_match(
     setting,
-    values = c("edc", "apc", "opc"),
+    values = c("apc", "edc", "opc"),
     multiple = TRUE
   )
 
@@ -187,7 +187,7 @@ create_area_gams <- function(
 run_area_gams <- function(
   area_code,
   base_year,
-  setting = c("edc", "apc", "opc"),
+  setting = c("apc", "edc", "opc"),
   omit_hsagrps = NULL
 ) {
 
