@@ -12,7 +12,7 @@ build_pop_data <- function(mye, snpp, first_proj_yr = 2023) {
   pop_est <- mye |>
     dplyr::rename(mf = sex) |>
     dplyr::mutate(
-      variant = factor("v0", levels = levels_variant_id),
+      variant = factor("v0", levels = variant_id_levels),
       # round population to integer
       pop = round(pop)
     ) |>
@@ -25,12 +25,12 @@ build_pop_data <- function(mye, snpp, first_proj_yr = 2023) {
     dplyr::filter(
       # important! pre-2023 will be replaced by mye
       year >= first_proj_yr,
-      id %in% app_vars
+      id %in% app_variants
     ) |>
     dplyr::left_join(lookup_variant_id, dplyr::join_by(id == proj_id)) |>
-    dplyr::rename(mf = sex, variant = vars_id) |>
+    dplyr::rename(mf = sex, variant = variant_id) |>
     dplyr::mutate(
-      variant = factor(variant, levels = levels_variant_id),
+      variant = factor(variant, levels = variant_id_levels),
       # round population to integer
       pop = round(pop)
     ) |>
