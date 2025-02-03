@@ -40,7 +40,11 @@ create_obs_rt_df <- function(
 
   act_df <- dplyr::bind_rows(act_ls)
 
-  # # load population data
+  # limit to 18+
+  act_df <- act_df |>
+    dplyr::filter(age >= 18)
+
+  # load population data
   pop_df <- readr::read_rds(
     path_self(
       filename = "pop_dat.rds"
