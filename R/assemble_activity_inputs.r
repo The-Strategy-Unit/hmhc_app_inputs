@@ -80,7 +80,7 @@ combine_profiles <- function(obs_rt_df, model_rt_df) {
       lookup_hsagrp_label,
       dplyr::join_by(hsagrp)
     ) |>
-    dplyr::select(area_code, setting, hsagrp, hsagrp_label, sex, age, urt, s) |>
+    dplyr::select(area_code, setting, hsagrp, hsagrp_label, sex, age, rt, s) |>
     dplyr::rename(group = hsagrp, label = hsagrp_label)
 }
 
@@ -97,7 +97,7 @@ format_profiles_json <- function(df_rts) {
         data, \(x) {
           x |>
             tidyr::pivot_longer(
-              c(urt, s), names_to = "var", values_to = "rt"
+              c(rt, s), names_to = "var", values_to = "rt"
             ) |>
             tidyr::pivot_wider(
               names_from = c(sex, var),
@@ -106,9 +106,9 @@ format_profiles_json <- function(df_rts) {
             ) |>
             dplyr::rename_with(
               \(x) {
-                stringr::str_remove(x, "urt")
+                stringr::str_remove(x, "rt")
               },
-              .cols = tidyselect::ends_with("urt")
+              .cols = tidyselect::ends_with("rt")
             ) |>
             dplyr::select(age, f, m, fs, ms)
         }
