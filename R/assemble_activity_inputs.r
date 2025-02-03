@@ -76,6 +76,7 @@ combine_profiles <- function(obs_rt_df, model_rt_df) {
         dplyr::rename(s = gam_rt),
       dplyr::join_by(area_code, setting, hsagrp, sex, age)
     ) |>
+    dplyr::filter(hsagrp %in% app_hsagrps) |>
     dplyr::left_join(
       lookup_hsagrp_label,
       dplyr::join_by(hsagrp)
