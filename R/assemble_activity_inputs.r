@@ -9,17 +9,6 @@
 # combine_profiles
 # format_profiles_json
 
-# ***********************
-# test or production ----
-# ***********************
-test <- TRUE
-
-if (!rlang::is_logical(test)) {
-  stop("test must be of type logical")
-} else {
-  area_codes <- test_areas
-}
-
 # create_obs_rt_df_all_areas() ----
 create_obs_rt_df_all_areas <- function(area_codes, base_year) {
   purrr::map(
