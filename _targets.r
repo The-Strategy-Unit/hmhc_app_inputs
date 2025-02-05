@@ -1,18 +1,40 @@
 # README
-# Created by use_targets()
+# target script file - configure and define the pipeline
 
-# packages required to define the pipeline ----
+# pkgs req to define the pipeline ----
 library("targets")
 library("tarchetypes")
 
-# set target options ----
+# targets options ----
 tar_option_set(
-  packages = c(
-    "tibble"
-  )
+  packages = NULL
 )
 
-# run scripts ----
+# *****************************************************************************
+# development (test) or production ----
+# *****************************************************************************
+dev_run <- TRUE
+
+if (!rlang::is_logical(dev_run)) {
+  stop("dev_run must be of type logical")
+}
+
+dev_or_prod <- function(area_codes_all, area_codes_test) {
+  if (rlang::is_true(dev_run)) {
+    area_codes_test
+  } else {
+    area_codes_all
+  }
+}
+
+area_codes_test <- c(
+  "E07000235",
+  "E08000026",
+  "E09000030",
+  "E92000001"
+)
+
+# load custom fns ----
 tar_source(
   c(
     here::here("R", "read_very_old.r"),
@@ -33,16 +55,22 @@ tar_source(
     here::here("R", "apc_prep_functions.r"),
     here::here("R", "opc_read_functions.r"),
     here::here("R", "opc_prep_functions.r"),
-    here::here("R", "assemble_pop_inputs.r"), # keep filename?
+    here::here("R", "hsa_helper_fns.r"),
+    here::here("R", "hsa_create_gams.r"),
+    here::here("R", "hsa_review_gams.r"),
+    here::here("R", "read_area_codes.r"),
+    here::here("R", "assemble_inputs_helpers.r"),
+    here::here("R", "assemble_pop_inputs.r"),
     here::here("R", "assemble_activity_inputs.r")
+    # here::here("R", "assemble_result_inputs.r")
   )
 )
 
 # nolint start: line_length_linter
-# target list ----
+# pipeline ----
 list(
   #############################################################################
-  # read-in population data
+  # read population data ----
   #############################################################################
   tar_target(data_raw_very_old, here::here("data_raw", "englandevo2023.csv"),
     format = "file"
@@ -91,7 +119,7 @@ list(
   ),
   tar_target(df_mye, read_mye(data_raw_mye)),
   #############################################################################
-  # read-in area lookups
+  # read area lookups
   #############################################################################
   tar_target(data_raw_lad18, here::here("data_raw", "LAD_(Dec_2018)_Names_and_Codes_in_the_United_Kingdom.csv"),
     format = "file"
@@ -125,14 +153,14 @@ list(
   tar_target(lookup_proj_id, mk_lookup_proj(here::here("data", "lookup_proj_id.csv"))),
   tar_target(lookup_lad18_lad23, mk_lookup_lad18_lad23(here::here("data", "lookup_lad18_lad23.csv"))),
   #############################################################################
-  # build population mye series
+  # assemble population mye series
   #############################################################################
   tar_target(df_mye_to90, mk_mye_to90(df_mye)),
   tar_target(df_mye_to100, mk_mye_to100(df_very_old, df_mye_to90)),
   tar_target(df_mye_series_to90, mk_mye_compl(df_mye_to90, df_raw_lad23, df_raw_cty23, df_icb23)),
   tar_target(df_mye_series_to100, mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)),
   #############################################################################
-  # build population projection series
+  # assemble population projection series
   #############################################################################
   tar_target(snpp_custom_vars, mk_custom_vars(df_npp, df_snpp)),
 # branch over df grouped by area_code
@@ -140,7 +168,7 @@ list(
   tar_target(snpp_series_to90_grp, snpp_to_dirs(snpp_series_to90), pattern = map(snpp_series_to90)),
   tar_target(snpp_series_to100, make_snpp_100(df_npp, snpp_series_to90, lookup_proj_id)),
   #############################################################################
-  # prep activity data
+  # assemble activity data
   #############################################################################
   tar_target(data_raw_edc, here::here("data_raw", "edc_dat_20250120.csv"),
     format = "file"),
@@ -161,14 +189,27 @@ list(
   tarchetypes::tar_group_by(df_prep_opc, prep_opc(df_raw_opc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
   tar_target(df_prep_opc_grp, opc_to_dirs(df_prep_opc), pattern = map(df_prep_opc)),
   #############################################################################
-  # build app files (JSON)
+  # assemble app files (JSON)
   #############################################################################
-  # branch over df grouped by area_code
+  # population inputs ----
+  # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(df_pop_data, build_pop_data(df_mye_series_to100, snpp_series_to100), area_code),
   tar_target(dfpop, format_pop_data_json(df_pop_data), pattern = map(df_pop_data)),
-  tar_target(df_obs_rts, get_observed_profiles(df_mye_series_to90, df_prep_edc, df_prep_apc, df_prep_opc)),
+  # activity inputs ----
+  tar_target(area_codes_csv, here::here("data", "app_input_files", "area_names_and_codes.csv"),
+    format = "file"),
+  tar_target(area_codes_all, read_area_codes(area_codes_csv)),
+  # tar_target(test_areas), can you define a target with no command?
+  # wrapper fn to return either full set of area codes or small test set
+  # depends on dev_run parameter
+  tar_target(area_codes, dev_or_prod(area_codes_all, area_codes_test)),
+  tar_target(x, create_obs_rt_df_all_areas(area_codes, base_year = 2022)), # return something here?
+  tar_target(y, run_gams_all_areas(area_codes, base_year = 2022)),
+  tar_target(df_obs_rts, get_observed_profiles(area_codes, base_year = 2022)),
   tar_target(df_model_rts, get_modeled_profiles(area_codes, base_year = 2022)),
+  # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(df_rts, combine_profiles(df_obs_rts, df_model_rts), area_code),
-  tar_target(dfrts, format_profiles_json(df_rts), pattern = map(df_rts))
+  tar_target(act_input_files, format_profiles_json(df_rts), pattern = map(df_rts))
+  # results inputs ----
 )
 # nolint end: line_length_linter
