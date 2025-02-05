@@ -2,13 +2,13 @@
 # list and lookups to help with assembly of data files for the app
 
 # areas used in app ----
-area_codes <- readr::read_csv(
-  here::here(
-    "data", "app_input_files",
-    "area_names_and_codes.csv"
-  )
-) |>
-  dplyr::pull(cd)
+# area_codes <- readr::read_csv(
+#   here::here(
+#     "data", "app_input_files",
+#     "area_names_and_codes.csv"
+#   )
+# ) |>
+#   dplyr::pull(cd)
 
 # for testing
 test_areas <- c(
