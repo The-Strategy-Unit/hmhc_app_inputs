@@ -19,19 +19,46 @@ if (!rlang::is_logical(dev_run)) {
   stop("dev_run must be of type logical")
 }
 
-dev_or_prod <- function(area_codes_all, area_codes_test) {
-  if (rlang::is_true(dev_run)) {
-    area_codes_test
-  } else {
-    area_codes_all
-  }
-}
+ac_path <- here::here("data", "app_input_files", "area_names_and_codes.csv")
 
-area_codes_test <- c(
-  "E07000235",
-  "E08000026",
-  "E09000030",
-  "E92000001"
+areas_all <- readr::read_csv(ac_path) |>
+  dplyr::pull(cd)
+
+areas_test <- c(
+  "E07000235", # 1
+  "E08000026", # 2
+  "E09000030", # 3
+  "E92000001" # 4
+)
+
+vars_all <- c(
+  "hpp", # 1
+  "lpp", # 2
+  "php", # 3
+  "plp", # 4
+  "hhh", # 5
+  "lll", # 6
+  "lhl", # 7
+  "hlh", # 8
+  "principal_proj", # 9
+  "var_proj_high_intl_migration", # 10
+  "var_proj_low_intl_migration" # 11
+)
+
+param_areas  <- if (rlang::is_true(dev_run)) areas_all else areas_test
+param_by     <- 2022L
+param_ey     <- if (rlang::is_true(dev_run)) 2035L else seq(2025L, 2040L, 5L)
+param_vars   <- vars_all
+param_draws  <- if (rlang::is_true(dev_run)) 1e2 else 1e3
+param_rng_st <- 014796
+
+# example of testing 'crossing' pattern
+tar_pattern(
+  cross(param_areas, param_by, param_ey, param_vars),
+  ac = length(param_areas),
+  by = length(param_by),
+  ey = length(param_ey),
+  av = length(param_vars)
 )
 
 # load custom fns ----
@@ -58,11 +85,12 @@ tar_source(
     here::here("R", "hsa_helper_fns.r"),
     here::here("R", "hsa_create_gams.r"),
     here::here("R", "hsa_review_gams.r"),
+    here::here("R", "hsa_get_results.r"),
     here::here("R", "read_area_codes.r"),
     here::here("R", "assemble_inputs_helpers.r"),
     here::here("R", "assemble_pop_inputs.r"),
-    here::here("R", "assemble_activity_inputs.r")
-    # here::here("R", "assemble_result_inputs.r")
+    here::here("R", "assemble_activity_inputs.r"),
+    here::here("R", "assemble_result_inputs.r")
   )
 )
 
@@ -191,25 +219,36 @@ list(
   #############################################################################
   # assemble app files (JSON)
   #############################################################################
-  # population inputs ----
+  # POPULATION INPUTS ----
   # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(df_pop_data, build_pop_data(df_mye_series_to100, snpp_series_to100), area_code),
   tar_target(dfpop, format_pop_data_json(df_pop_data), pattern = map(df_pop_data)),
-  # activity inputs ----
+  # ACTIVITY INPUTS ----
   tar_target(area_codes_csv, here::here("data", "app_input_files", "area_names_and_codes.csv"),
     format = "file"),
   tar_target(area_codes_all, read_area_codes(area_codes_csv)),
-  # tar_target(test_areas), can you define a target with no command?
-  # wrapper fn to return either full set of area codes or small test set
-  # depends on dev_run parameter
-  tar_target(area_codes, dev_or_prod(area_codes_all, area_codes_test)),
+  # define modeling params as targets
+  tar_target(area_codes, param_areas),
   tar_target(x, create_obs_rt_df_all_areas(area_codes, base_year = 2022)), # return something here?
   tar_target(y, run_gams_all_areas(area_codes, base_year = 2022)),
   tar_target(df_obs_rts, get_observed_profiles(area_codes, base_year = 2022)),
   tar_target(df_model_rts, get_modeled_profiles(area_codes, base_year = 2022)),
   # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(df_rts, combine_profiles(df_obs_rts, df_model_rts), area_code),
-  tar_target(act_input_files, format_profiles_json(df_rts), pattern = map(df_rts))
-  # results inputs ----
+  tar_target(act_input_files, format_profiles_json(df_rts), pattern = map(df_rts)),
+  # RESULTS INPUTS ----
+  # define modeling params as targets
+  # param_areas defined above for activity inputs
+  tar_target(base_year, param_by),
+  tar_target(end_year, param_ey),
+  tar_target(proj_id, param_vars),
+  # run pure demographic models
+  tar_target(pure_demo,
+    get_demographic_chg(area_codes, base_year, end_year, proj_id),
+    pattern = cross(area_codes, base_year, end_year, proj_id)
+  )
 )
 # nolint end: line_length_linter
+
+# https://stackoverflow.com/questions/77947521/targets-does-not-recognize-other-targets-inside-values-of-tar-map
+# https://github.com/The-Strategy-Unit/nhp_strategies/blob/a9bdea46ab4b8e67644a8e62f35dd0f47a2dc60a/_targets.R#L14

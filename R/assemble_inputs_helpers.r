@@ -10,14 +10,6 @@
 # ) |>
 #   dplyr::pull(cd)
 
-# for testing
-test_areas <- c(
-  "E07000235",
-  "E08000026",
-  "E09000030",
-  "E92000001"
-)
-
 # variants used in app ----
 app_variants <- c(
   "hpp", # 1

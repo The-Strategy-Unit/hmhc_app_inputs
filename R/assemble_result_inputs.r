@@ -26,17 +26,6 @@ source(here::here("R", "hsa_helper_fns.r"))
 # combine_results
 # format_model_json
 
-# ***********************
-# test or production ----
-# ***********************
-test <- TRUE
-
-if (!rlang::is_logical(test)) {
-  stop("test must be of type logical")
-} else {
-  area_codes <- test_areas
-}
-
 # compute histogram binning using pretty version of Freedman Diaconis rule ----
 pretty_fd <- function(x) {
 
@@ -165,35 +154,22 @@ format_model_json <- function(df) {
   )
 }
 
-# model parameters ----
-# 360 areas x 11 variants x 4 horizons = 15,840 models
-# plus 1000 simulations for each run of the full hsa model
-model_params <- tidyr::expand_grid(app_variants, area_codes) |>
-  dplyr::select(area_code = area_codes, proj_id = app_variants) |>
-  dplyr::group_by(dplyr::across(tidyselect::everything())) |>
-  tidyr::expand(base_year = 2022L, end_year = seq(2025L, 2040L, 5L)) |>
-  dplyr::ungroup() |>
-  dplyr::mutate(
-    model_runs = 1e3,
-    rng_state = 014796
-  ) |>
-  dplyr::mutate(proj_id = factor(proj_id, levels = proj_id_levels)) |>
-  dplyr::arrange(area_code, proj_id, base_year, end_year)
 
-# a) pure demographic model ----
-model_params_nomc  <- model_params |>
-  dplyr::select(-model_runs, -rng_state)
 
-demo_models <- purrr::pmap(
-  model_params_nomc,
-  get_demographic_chg,
-  # add a progress bar
-  .progress = list(
-    clear = TRUE,
-    format = "Pure demographic model: {cli::pb_bar} {cli::pb_percent} | ETA: {cli::pb_eta}", # nolint: line_length_linter.
-    type = "iterator"
-  )
-)
+###############################################################################
+
+
+
+# demo_models <- purrr::pmap(
+#   model_params_nomc,
+#   get_demographic_chg,
+#   # add a progress bar
+#   .progress = list(
+#     clear = TRUE,
+#     format = "Pure demographic model: {cli::pb_bar} {cli::pb_percent} | ETA: {cli::pb_eta}", # nolint: line_length_linter.
+#     type = "iterator"
+#   )
+# )
 
 # hsa mode model ----
 hsamd_models <- purrr::pmap(
