@@ -50,7 +50,7 @@ param_by     <- 2022L
 param_ey     <- if (rlang::is_true(dev_run)) 2035L else seq(2025L, 2040L, 5L)
 param_vars   <- vars_all
 param_draws  <- if (rlang::is_true(dev_run)) 1e2 else 1e3
-param_rng_st <- 014796
+param_rng    <- 014796
 
 # example of testing 'crossing' pattern
 tar_pattern(
