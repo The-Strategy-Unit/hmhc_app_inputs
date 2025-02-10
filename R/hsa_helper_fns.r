@@ -235,7 +235,7 @@ model_rt_hsa_ages <- function(area_code, base_year, adjusted_ages) {
 
   # list is preferred as model runs can be large
   gams <- gams |>
-    tidyr::unnest(gams) |>
+    # tidyr::unnest(gams) |>
     split(~ sex)
 
   # predict.gam returns an array (convert to vector)
@@ -271,7 +271,7 @@ interp_rt_hsa_ages <- function(area_code, base_year, adjusted_ages) {
 
   act_df <- readr::read_csv(
     here::here(
-      path_self("model_rt_tbl.csv")
+      path_self("model_rt_df.csv")
     )
   ) |>
     dplyr::group_by(setting, hsagrp, sex) |>

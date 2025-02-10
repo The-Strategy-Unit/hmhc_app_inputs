@@ -77,7 +77,7 @@ get_hsa_factors <- function(
   )
 
   chron_rt <- readr::read_csv(
-    path_self("model_rt_tbl.csv"),
+    path_self("model_rt_df.csv"),
     show_col_types = FALSE
   )
 
