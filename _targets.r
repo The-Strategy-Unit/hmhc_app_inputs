@@ -45,7 +45,7 @@ vars_all <- c(
   "var_proj_low_intl_migration" # 11
 )
 
-param_areas  <- if (rlang::is_true(dev_run)) areas_all else areas_test
+param_areas  <- if (rlang::is_true(dev_run)) areas_test else areas_all
 param_by     <- 2022L
 param_ey     <- if (rlang::is_true(dev_run)) 2035L else seq(2025L, 2040L, 5L)
 param_vars   <- vars_all
