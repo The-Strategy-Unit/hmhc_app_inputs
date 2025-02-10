@@ -29,8 +29,8 @@ get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
     "apc", "birth_bds",
     "apc", "mat_n",
     "apc", "mat_bds",
-    "apc", "paeds-ordelec_n",
-    "apc", "paeds-ordelec_bds",
+    "apc", "paeds-elec_n",
+    "apc", "paeds-elec_bds",
     "apc", "paeds-emer_n",
     "apc", "paeds-emer_bds"
   )
@@ -91,8 +91,8 @@ get_hsa_chg <- function(
     "apc", "birth_bds",
     "apc", "mat_n",
     "apc", "mat_bds",
-    "apc", "paeds-ordelec_n",
-    "apc", "paeds-ordelec_bds",
+    "apc", "paeds-elec_n",
+    "apc", "paeds-elec_bds",
     "apc", "paeds-emer_n",
     "apc", "paeds-emer_bds"
   )
