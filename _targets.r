@@ -272,7 +272,17 @@ list(
     hsa_mc,
       get_hsa_chg(area_codes, base_year, end_year, proj_id, model_runs, rng_state, method = "gams", mode = FALSE),
       pattern = cross(area_codes, base_year, end_year, proj_id, map(model_runs, rng_state))
-  )
+  ),
+  # group-up results by sex
+  tar_target(pure_demo_grp, nomc_grp_sex(pure_demo)),
+  tar_target(hsa_mode_grp, nomc_grp_sex(hsa_mode)),
+  tar_target(hsa_mc_grp, mc_grp_sex(hsa_mc)),
+  # compute histogram binning
+  tar_target(hsa_mc_grp_bins, compute_binning(hsa_mc_grp)),
+  # collect results into a single df
+  # dynamic branching over row groups (area_code)
+  tarchetypes::tar_group_by(df_res, join_res_dfs(pure_demo_grp, hsa_mode_grp, hsa_mc_grp_bins), area_code),
+  tar_target(j, format_results_json(df_res), pattern = map(df_res))
 )
 # nolint end: line_length_linter
 
