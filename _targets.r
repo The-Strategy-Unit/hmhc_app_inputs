@@ -95,6 +95,7 @@ tar_source(
     here::here("R", "hsa_helper_fns.r"),
     here::here("R", "hsa_create_gams.r"),
     here::here("R", "hsa_review_gams.r"),
+    here::here("R", "hsa_get_factors.r"),
     here::here("R", "hsa_get_results.r"),
     here::here("R", "read_area_codes.r"),
     here::here("R", "assemble_inputs_helpers.r"),
@@ -257,6 +258,14 @@ list(
   tar_target(pure_demo,
     get_demographic_chg(area_codes, base_year, end_year, proj_id),
     pattern = cross(area_codes, base_year, end_year, proj_id)
+  ),
+  # run hsa mode only models
+  tar_target(model_runs, param_draws),
+  tar_target(rng_state, param_rng),
+  tar_target(
+    hsa_mode,
+      get_hsa_chg(area_codes, base_year, end_year, proj_id, model_runs, rng_state, method = "gams", mode = TRUE),
+      pattern = cross(area_codes, base_year, end_year, proj_id, map(model_runs, rng_state))
   )
 )
 # nolint end: line_length_linter
