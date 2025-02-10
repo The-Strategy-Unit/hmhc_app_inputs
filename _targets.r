@@ -266,6 +266,12 @@ list(
     hsa_mode,
       get_hsa_chg(area_codes, base_year, end_year, proj_id, model_runs, rng_state, method = "gams", mode = TRUE),
       pattern = cross(area_codes, base_year, end_year, proj_id, map(model_runs, rng_state))
+  ),
+  # run hsa monte carlo models
+  tar_target(
+    hsa_mc,
+      get_hsa_chg(area_codes, base_year, end_year, proj_id, model_runs, rng_state, method = "gams", mode = FALSE),
+      pattern = cross(area_codes, base_year, end_year, proj_id, map(model_runs, rng_state))
   )
 )
 # nolint end: line_length_linter
