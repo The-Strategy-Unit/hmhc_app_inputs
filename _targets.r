@@ -116,6 +116,7 @@ list(
     ),
   ),
   tar_target(df_lifetbl, prep_life_tbl(lt_paths), pattern = map(lt_paths)),
+  tar_target(i, { readr::write_csv(df_lifetbl, here::here("data", "life_tables_2018b.csv")) } ),
   # branch over snpp variants
   tar_files(
     snpp_paths,

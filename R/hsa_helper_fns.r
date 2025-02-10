@@ -90,7 +90,7 @@ load_life_expectancy <- function(base_year, end_year) {
   # age range for health status adjustment
   hsa_age_range <- seq.int(55, 90)
 
-  ex_dat <- targets::tar_read(df_lifetbl) |>
+  ex_dat <- readr::read_csv(here::here("data", "life_tables_2018b.csv")) |>
     # use period life expectancy
     dplyr::filter(type == "period", age %in% hsa_age_range)
 
