@@ -25,7 +25,6 @@ get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
 
   omit_hsagrps <- tibble::tribble(
     ~ setting, ~ omit,
-    "edc", NA_character_,
     "apc", "birth_n",
     "apc", "birth_bds",
     "apc", "mat_n",
@@ -33,8 +32,7 @@ get_demographic_chg <- function(area_code, base_year, end_year, proj_id) {
     "apc", "paeds-ordelec_n",
     "apc", "paeds-ordelec_bds",
     "apc", "paeds-emer_n",
-    "apc", "paeds-emer_bds",
-    "opc", NA_character_
+    "apc", "paeds-emer_bds"
   )
 
   act <- load_activity_data(area_code, base_year) |>
@@ -89,7 +87,6 @@ get_hsa_chg <- function(
 
   omit_hsagrps <- tibble::tribble(
     ~ setting, ~ omit,
-    "edc", NA_character_,
     "apc", "birth_n",
     "apc", "birth_bds",
     "apc", "mat_n",
@@ -97,8 +94,7 @@ get_hsa_chg <- function(
     "apc", "paeds-ordelec_n",
     "apc", "paeds-ordelec_bds",
     "apc", "paeds-emer_n",
-    "apc", "paeds-emer_bds",
-    "opc", NA_character_
+    "apc", "paeds-emer_bds"
   )
 
   act <- load_activity_data(area_code, base_year) |>
