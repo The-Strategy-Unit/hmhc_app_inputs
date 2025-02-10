@@ -55,10 +55,20 @@ param_rng_st <- 014796
 # example of testing 'crossing' pattern
 tar_pattern(
   cross(param_areas, param_by, param_ey, param_vars),
-  ac = length(param_areas),
-  by = length(param_by),
-  ey = length(param_ey),
-  av = length(param_vars)
+  param_areas = length(param_areas),
+  param_by = length(param_by),
+  param_ey = length(param_ey),
+  param_vars = length(param_vars)
+)
+
+tar_pattern(
+  cross(param_areas, param_by, param_ey, param_vars, map(param_draws, param_rng)),
+  param_areas = length(param_areas),
+  param_by = length(param_by),
+  param_ey = length(param_ey),
+  param_vars = length(param_vars),
+  param_draws = 1,
+  param_rng = 1
 )
 
 # load custom fns ----
