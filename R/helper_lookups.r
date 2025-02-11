@@ -4,7 +4,7 @@
 # make a mapping from snpp variants to npp variants, and
 # from all projections to life table variants ----
 # nolint start: line_length_linter
-mk_lookup_proj <- function(pathout) {
+mk_lookup_proj <- function() {
   dplyr::tribble(
     ~proj_src, ~proj_id, ~proj_desc, ~ex_id, ~proj_map,
     "snpp", "principal_proj", "Principal projection", "ppp", "ppp",
@@ -36,12 +36,17 @@ mk_lookup_proj <- function(pathout) {
         is.na(proj_map) ~ proj_id,
         TRUE ~ as.character(proj_map)
       )
-    ) |>
-    readr::write_csv(pathout)
-} 
+    )
+}
+
+lookup_proj_csv <- function(df) {
+  path <- here::here("data", "lookup_proj_id.csv")
+  readr::write_csv(df, path)
+  return(path)
+}
 
 # make a mapping for local government changes from 2018 to 2023 ----
-mk_lookup_lad18_lad23 <- function(pathout) {
+mk_lookup_lad18_lad23 <- function() {
   dplyr::tribble(
     ~"yrofchg", ~"lad18cd", ~"lad18nm", ~"new_ladcd", ~"new_ladnm",
     2019, "E06000028", "Bournemouth", "E06000058", "Bournemouth, Christchurch and Poole",
@@ -89,7 +94,12 @@ mk_lookup_lad18_lad23 <- function(pathout) {
     2019, "E07000205", "Suffolk Coastal", "E07000244", "East Suffolk",
     2019, "E07000206", "Waveney", "E07000244", "East Suffolk"
   ) |>
-    dplyr::mutate(yrofchg = as.integer(yrofchg)) |>
-    readr::write_csv(pathout)
+    dplyr::mutate(yrofchg = as.integer(yrofchg))
 }
 # nolint end: line_length_linter
+
+lookup_lad18_lad23_csv <- function(df) {
+  path <- here::here("data", "lookup_lad18_lad23.csv")
+  readr::write_csv(df, path)
+  return(path)
+}

@@ -24,8 +24,8 @@
 #   print(n = 25) # nolint: commented_code_linter.
 
 # lad-icb mapping ----
-mk_lookup_icb23 <- function(pathin, pathout) {
-  readr::read_csv(pathin) |>
+mk_lookup_icb23 <- function(path) {
+  readr::read_csv(path) |>
     dplyr::group_by(ICB23CD, ICB23NM, LAD23CD, LAD23NM) |>
     dplyr::summarise(n = dplyr::n()) |>
     dplyr::group_by(LAD23NM) |>
@@ -33,6 +33,11 @@ mk_lookup_icb23 <- function(pathin, pathout) {
     dplyr::filter(freq == max(freq)) |>
     dplyr::ungroup() |>
     dplyr::rename_with(tolower, .cols = everything()) |>
-    dplyr::select(lad23cd, lad23nm, icb23cd, icb23nm) |>
-    readr::write_csv(pathout)
+    dplyr::select(lad23cd, lad23nm, icb23cd, icb23nm)
+}
+
+lookup_icb23_csv <- function(df) {
+  path <- here::here("data", "lookup_lad23_icb23.csv")
+  readr::write_csv(df, path)
+  return(path)
 }
