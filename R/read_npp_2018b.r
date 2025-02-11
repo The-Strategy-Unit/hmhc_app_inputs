@@ -48,11 +48,16 @@ prep_npp <- function(path) {
 }
 
 # variant codes ----
-prep_npp_codes <- function(pathin, pathout) {
-  readr::read_lines(pathin) |>
+prep_npp_codes <- function(path) {
+  readr::read_lines(path) |>
     tibble::as_tibble() |>
     dplyr::filter(stringr::str_detect(value, "^[a-z]{3}:")) |>
     tidyr::separate(value, c("proj_cd", "proj_nm"), ": ") |>
-    dplyr::mutate(proj_cd = stringr::str_c("en_", proj_cd)) |>
-    readr::write_csv(pathout)
+    dplyr::mutate(proj_cd = stringr::str_c("en_", proj_cd))
+}
+
+npp_codes_csv <- function(df) {
+  path <- here::here("data", "npp_2018b_codes.csv")
+  readr::write_csv(df, path)
+  return(path)
 }

@@ -148,7 +148,12 @@ list(
   # not used posterity - split into 2
   tar_target(
     df_npp_codes,
-    prep_npp_codes(data_raw_npp_codes, here::here("data", "npp_2018b_codes.csv"))
+    prep_npp_codes(data_raw_npp_codes)
+  ),
+  tar_target(
+    csv_npp_codes,
+    npp_codes_csv(df_npp_codes),
+    format = "file"
   ),
   tar_target(
     data_raw_mye,
