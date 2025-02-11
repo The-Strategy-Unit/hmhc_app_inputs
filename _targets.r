@@ -164,7 +164,7 @@ list(
     read_mye(data_raw_mye)
   ),
   #############################################################################
-  # read area lookups
+  # read geographic data ----
   #############################################################################
   tar_target(
     data_raw_lad18,
@@ -290,43 +290,111 @@ list(
     csv_lad18_lad23,
     lookup_lad18_lad23_csv(lookup_lad18_lad23),
     format = "file"
+  ),
+  #############################################################################
+  # assemble population mye series
+  #############################################################################
+  tar_target(
+    df_mye_to90,
+    mk_mye_to90(df_mye)
+  ),
+  tar_target(
+    df_mye_to100,
+    mk_mye_to100(df_very_old, df_mye_to90)
+  ),
+  tar_target(
+    df_mye_series_to90,
+    mk_mye_compl(df_mye_to90, df_raw_lad23, df_raw_cty23, df_icb23)
+  ),
+  tar_target(
+    df_mye_series_to100,
+    mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)
+  ),
+  #############################################################################
+  # assemble population projection series
+  #############################################################################
+  tar_target(
+    snpp_custom_vars,
+    mk_custom_vars(df_npp, df_snpp)
+  ),
+  # branch over df grouped by area_code
+  tarchetypes::tar_group_by(
+    snpp_series_to90,
+    mk_snpp_series(snpp_custom_vars, df_snpp, lookup_lad18_lad23, df_retired_cty, df_npp, df_icb23),
+    area_code
+  ),
+  tar_target(
+    snpp_series_to90_grp,
+    snpp_to_dirs(snpp_series_to90),
+    pattern = map(snpp_series_to90)
+  ),
+  tar_target(
+    snpp_series_to100,
+    make_snpp_100(df_npp, snpp_series_to90, lookup_proj_id)
+  ),
+  #############################################################################
+  # assemble activity data
+  #############################################################################
+  tar_target(
+    data_raw_edc,
+    here::here("data_raw", "edc_dat_20250120.csv"),
+    format = "file"
+  ),
+  tar_target(
+    df_raw_edc,
+    read_raw_edc(data_raw_edc)
+  ),
+  # branch over df grouped by area_code
+  tarchetypes::tar_group_by(
+    df_prep_edc,
+    prep_edc(df_raw_edc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23),
+    area_code
+  ),
+  tar_target(
+    df_prep_edc_grp,
+    edc_to_dirs(df_prep_edc),
+    pattern = map(df_prep_edc)
+  ),
+  tar_target(
+    data_raw_apc,
+    here::here("data_raw", "apc_dat_20250120.csv"),
+    format = "file"
+  ),
+  tar_target(
+    df_raw_apc,
+    read_raw_edc(data_raw_apc)
+  ),
+  # branch over df grouped by area_code
+  tarchetypes::tar_group_by(
+    df_prep_apc,
+    prep_apc(df_raw_apc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23),
+    area_code
+  ),
+  tar_target(
+    df_prep_apc_grp,
+    apc_to_dirs(df_prep_apc),
+    pattern = map(df_prep_apc)
+  ),
+  tar_target(
+    data_raw_opc,
+    here::here("data_raw", "opc_dat_20250120.csv"),
+    format = "file"
+  ),
+  tar_target(
+    df_raw_opc,
+    read_raw_opc(data_raw_opc)
+  ),
+  # branch over df grouped by area_code
+  tarchetypes::tar_group_by(
+    df_prep_opc,
+    prep_opc(df_raw_opc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23),
+    area_code
+  ),
+  tar_target(
+    df_prep_opc_grp,
+    opc_to_dirs(df_prep_opc),
+    pattern = map(df_prep_opc)
   )
-#   #############################################################################
-#   # assemble population mye series
-#   #############################################################################
-#   tar_target(df_mye_to90, mk_mye_to90(df_mye)),
-#   tar_target(df_mye_to100, mk_mye_to100(df_very_old, df_mye_to90)),
-#   tar_target(df_mye_series_to90, mk_mye_compl(df_mye_to90, df_raw_lad23, df_raw_cty23, df_icb23)),
-#   tar_target(df_mye_series_to100, mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)),
-#   #############################################################################
-#   # assemble population projection series
-#   #############################################################################
-#   tar_target(snpp_custom_vars, mk_custom_vars(df_npp, df_snpp)),
-# # branch over df grouped by area_code
-#   tarchetypes::tar_group_by(snpp_series_to90, mk_snpp_series(snpp_custom_vars, df_snpp, lookup_lad18_lad23, df_retired_cty, df_npp, df_icb23), area_code),
-#   tar_target(snpp_series_to90_grp, snpp_to_dirs(snpp_series_to90), pattern = map(snpp_series_to90)),
-#   tar_target(snpp_series_to100, make_snpp_100(df_npp, snpp_series_to90, lookup_proj_id)),
-#   #############################################################################
-#   # assemble activity data
-#   #############################################################################
-#   tar_target(data_raw_edc, here::here("data_raw", "edc_dat_20250120.csv"),
-#     format = "file"),
-#   tar_target(df_raw_edc, read_raw_edc(data_raw_edc)),
-#   # branch over df grouped by area_code
-#   tarchetypes::tar_group_by(df_prep_edc, prep_edc(df_raw_edc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
-#   tar_target(df_prep_edc_grp, edc_to_dirs(df_prep_edc), pattern = map(df_prep_edc)),
-#   tar_target(data_raw_apc, here::here("data_raw", "apc_dat_20250120.csv"),
-#     format = "file"),
-#   tar_target(df_raw_apc, read_raw_edc(data_raw_apc)),
-#   # branch over df grouped by area_code
-#   tarchetypes::tar_group_by(df_prep_apc, prep_apc(df_raw_apc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
-#   tar_target(df_prep_apc_grp, apc_to_dirs(df_prep_apc), pattern = map(df_prep_apc)),
-#   tar_target(data_raw_opc, here::here("data_raw", "opc_dat_20250120.csv"),
-#     format = "file"),
-#   tar_target(df_raw_opc, read_raw_opc(data_raw_opc)),
-#   # branch over df grouped by area_code
-#   tarchetypes::tar_group_by(df_prep_opc, prep_opc(df_raw_opc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23), area_code),
-#   tar_target(df_prep_opc_grp, opc_to_dirs(df_prep_opc), pattern = map(df_prep_opc)),
 #   #############################################################################
 #   # assemble app files (JSON)
 #   #############################################################################
