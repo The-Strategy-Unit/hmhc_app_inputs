@@ -106,15 +106,15 @@ list(
   ),
   tar_target(
     df_lifetbl,
-    prep_life_tbl(lt_paths),
-    pattern = map(lt_paths)
+    prep_life_tbl(lt_files),
+    pattern = map(lt_files)
   ),
   tar_target(
-    i, {
-    readr::write_csv(df_lifetbl, here::here("data", "life_tables_2018b.csv"))
-    }
+    csv_lifetbl,
+    life_tbl_csv(df_lifetbl),
+    format = "file"
   ),
-  # branch over snpp variants
+  # branch over snpp variants files
   tarchetypes::tar_files_input(
     snpp_paths,
       fs::dir_ls(
@@ -127,7 +127,7 @@ list(
     prep_snpp(snpp_paths),
     pattern = map(snpp_paths)
   ),
-  # branch over npp variants
+  # branch over npp variants files
   tarchetypes::tar_files_input(
      npp_paths,
       fs::dir_ls(
@@ -145,6 +145,7 @@ list(
     here::here("data_raw", "npp_2018b", "NPP codes.txt"),
     format = "file"
   ),
+  # not used posterity - split into 2
   tar_target(
     df_npp_codes,
     prep_npp_codes(data_raw_npp_codes, here::here("data", "npp_2018b_codes.csv"))

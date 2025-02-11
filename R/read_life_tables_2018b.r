@@ -37,3 +37,9 @@ prep_life_tbl <- function(path) {
     dplyr::bind_rows() |>
     dplyr::mutate(id = id)
 }
+
+life_tbl_csv <- function(df) {
+  path <- here::here("data", "life_tables_2018b.csv")
+  readr::write_csv(df, path)
+  return(path)
+}
