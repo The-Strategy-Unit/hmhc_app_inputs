@@ -412,15 +412,6 @@ list(
   #############################################################################
   # assemble activity input files (JSON) ----
   #############################################################################
-  tar_target(
-    area_codes_csv,
-    here::here("data", "app_input_files", "area_names_and_codes.csv"),
-    format = "file"
-  ),
-  tar_target(
-    area_codes_all,
-    read_area_codes(area_codes_csv)
-  ),
   # define modeling params as targets
   tar_target(
     area_codes,
