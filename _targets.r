@@ -7,7 +7,8 @@ library("tarchetypes")
 
 # targets options ----
 tar_option_set(
-  packages = NULL
+  packages = NULL, # renv?
+  format = "auto" # use "qs" storage format
 )
 
 # *****************************************************************************
@@ -19,9 +20,9 @@ if (!rlang::is_logical(dev_run)) {
   stop("dev_run must be of type logical")
 }
 
-ac_path <- here::here("data", "app_input_files", "area_names_and_codes.csv")
+areas_path <- here::here("data", "app_input_files", "area_names_and_codes.csv")
 
-areas_all <- readr::read_csv(ac_path) |>
+areas_all <- readr::read_csv(areas_path) |>
   dplyr::pull(cd)
 
 areas_test <- c(
@@ -52,7 +53,7 @@ param_vars   <- vars_all
 param_draws  <- if (rlang::is_true(dev_run)) 1e2 else 1e3
 param_rng    <- 014796
 
-# example of testing 'crossing' pattern
+# example of testing 'crossing' pattern for dynamic branching
 tar_pattern(
   cross(param_areas, param_by, param_ey, param_vars),
   param_areas = length(param_areas),
@@ -61,8 +62,12 @@ tar_pattern(
   param_vars = length(param_vars)
 )
 
+# example showing how patterns are composable
 tar_pattern(
-  cross(param_areas, param_by, param_ey, param_vars, map(param_draws, param_rng)),
+  cross(
+    param_areas, param_by, param_ey, param_vars,
+    map(param_draws, param_rng)
+  ),
   param_areas = length(param_areas),
   param_by = length(param_by),
   param_ey = length(param_ey),
@@ -72,38 +77,8 @@ tar_pattern(
 )
 
 # load custom fns ----
-tar_source(
-  c(
-    here::here("R", "read_very_old.r"),
-    here::here("R", "read_life_tables_2018b.r"),
-    here::here("R", "read_snpp_2018b.r"),
-    here::here("R", "read_npp_2018b.r"),
-    here::here("R", "read_pop_mye.r"),
-    here::here("R", "read_geog_codes.r"),
-    here::here("R", "read_icb_lookup.r"),
-    here::here("R", "helper_lookups.r"),
-    here::here("R", "make_mye_series.r"),
-    here::here("R", "make_snpp_2018b_custom_vars.r"),
-    here::here("R", "make_snpp_series.r"),
-    here::here("R", "make_snpp_series_age100.r"),
-    here::here("R", "edc_read_functions.r"),
-    here::here("R", "edc_prep_functions.r"),
-    here::here("R", "apc_read_functions.r"),
-    here::here("R", "apc_prep_functions.r"),
-    here::here("R", "opc_read_functions.r"),
-    here::here("R", "opc_prep_functions.r"),
-    here::here("R", "hsa_helper_fns.r"),
-    here::here("R", "hsa_create_gams.r"),
-    here::here("R", "hsa_review_gams.r"),
-    here::here("R", "hsa_get_factors.r"),
-    here::here("R", "hsa_get_results.r"),
-    here::here("R", "read_area_codes.r"),
-    here::here("R", "assemble_inputs_helpers.r"),
-    here::here("R", "assemble_pop_inputs.r"),
-    here::here("R", "assemble_activity_inputs.r"),
-    here::here("R", "assemble_result_inputs.r")
-  )
-)
+fs::dir_ls(here::here("R"), glob = "*.r") |>
+  purrr::walk(source)
 
 # nolint start: line_length_linter
 # pipeline ----
@@ -111,53 +86,78 @@ list(
   #############################################################################
   # read population data ----
   #############################################################################
-  tar_target(data_raw_very_old, here::here("data_raw", "englandevo2023.csv"),
+  tar_target(
+    data_raw_very_old,
+    here::here("data_raw", "englandevo2023.csv"),
     format = "file"
   ),
-  tar_target(df_raw_very_old, read_very_old(data_raw_very_old)),
-  tar_target(df_very_old, prep_very_old(df_raw_very_old)),
+  tar_target(
+    df_raw_very_old,
+    read_very_old(data_raw_very_old)
+  ),
+  tar_target(
+    df_very_old,
+    prep_very_old(df_raw_very_old)
+  ),
   # branch over life table files
-  tar_files(
-    lt_paths,
-    list.files(
-      here::here("data_raw"),
-      "18ex(.xls)$",
-      recursive = TRUE,
-      full.names = TRUE
-    ),
+  tarchetypes::tar_files_input(
+    lt_files,
+    fs::dir_ls(here::here("data_raw"), glob = "*18ex.xls")
   ),
-  tar_target(df_lifetbl, prep_life_tbl(lt_paths), pattern = map(lt_paths)),
-  tar_target(i, { readr::write_csv(df_lifetbl, here::here("data", "life_tables_2018b.csv")) } ),
+  tar_target(
+    df_lifetbl,
+    prep_life_tbl(lt_paths),
+    pattern = map(lt_paths)
+  ),
+  tar_target(
+    i, {
+    readr::write_csv(df_lifetbl, here::here("data", "life_tables_2018b.csv"))
+    }
+  ),
   # branch over snpp variants
-  tar_files(
+  tarchetypes::tar_files_input(
     snpp_paths,
-    list.files(
-      here::here("data_raw"),
-      "^(2018 SNPP).*(females|males).*(.csv$)",
-      recursive = TRUE,
-      full.names = TRUE
-    ),
+      fs::dir_ls(
+        here::here("data_raw"), regexp = "2018 SNPP.*(females|males).*(.csv$)",
+        recurse = TRUE
+      )
   ),
-  tar_target(df_snpp, prep_snpp(snpp_paths), pattern = map(snpp_paths)),
+  tar_target(
+    df_snpp,
+    prep_snpp(snpp_paths),
+    pattern = map(snpp_paths)
+  ),
   # branch over npp variants
-  tar_files(
-    npp_paths,
-    list.files(
-      here::here("data_raw"),
-      "2018(.xls)$",
-      recursive = TRUE,
-      full.names = TRUE
-    ),
+  tarchetypes::tar_files_input(
+     npp_paths,
+      fs::dir_ls(
+        here::here("data_raw"), regexp = "2018(.xls)$",
+        recurse = TRUE
+      )
   ),
-  tar_target(df_npp, prep_npp(npp_paths), pattern = map(npp_paths)),
-  tar_target(data_raw_npp_codes, here::here("data_raw", "npp_2018b", "NPP codes.txt"),
+  tar_target(
+    df_npp,
+    prep_npp(npp_paths),
+    pattern = map(npp_paths)
+  ),
+  tar_target(
+    data_raw_npp_codes,
+    here::here("data_raw", "npp_2018b", "NPP codes.txt"),
     format = "file"
   ),
-  tar_target(df_npp_codes, prep_npp_codes(data_raw_npp_codes, here::here("data", "npp_2018b_codes.csv"))),
-  tar_target(data_raw_mye, here::here("data_raw", "nomis_mye_lad_1991to2023_20250116.csv"),
+  tar_target(
+    df_npp_codes,
+    prep_npp_codes(data_raw_npp_codes, here::here("data", "npp_2018b_codes.csv"))
+  ),
+  tar_target(
+    data_raw_mye,
+    here::here("data_raw", "nomis_mye_lad_1991to2023_20250116.csv"),
     format = "file"
   ),
-  tar_target(df_mye, read_mye(data_raw_mye)),
+  tar_target(
+    df_mye,
+    read_mye(data_raw_mye)
+  ),
   #############################################################################
   # read area lookups
   #############################################################################
@@ -287,4 +287,3 @@ list(
 # nolint end: line_length_linter
 
 # https://stackoverflow.com/questions/77947521/targets-does-not-recognize-other-targets-inside-values-of-tar-map
-# https://github.com/The-Strategy-Unit/nhp_strategies/blob/a9bdea46ab4b8e67644a8e62f35dd0f47a2dc60a/_targets.R#L14
