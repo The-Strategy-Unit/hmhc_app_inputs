@@ -292,7 +292,7 @@ list(
     format = "file"
   ),
   #############################################################################
-  # assemble population mye series
+  # assemble population mye series ----
   #############################################################################
   tar_target(
     df_mye_to90,
@@ -311,7 +311,7 @@ list(
     mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)
   ),
   #############################################################################
-  # assemble population projection series
+  # assemble population projection series ----
   #############################################################################
   tar_target(
     snpp_custom_vars,
@@ -333,7 +333,7 @@ list(
     make_snpp_100(df_npp, snpp_series_to90, lookup_proj_id)
   ),
   #############################################################################
-  # assemble activity data
+  # assemble activity data ----
   #############################################################################
   tar_target(
     data_raw_edc,
@@ -394,28 +394,68 @@ list(
     df_prep_opc_grp,
     opc_to_dirs(df_prep_opc),
     pattern = map(df_prep_opc)
+  ),
+  #############################################################################
+  # assemble population input files (JSON) ----
+  #############################################################################
+  # dynamic branching over row groups (area_code)
+  tarchetypes::tar_group_by(
+    df_pop_data,
+    build_pop_data(df_mye_series_to100, snpp_series_to100),
+    area_code
+  ),
+  tar_target(
+    dfpop,
+    format_pop_data_json(df_pop_data),
+    pattern = map(df_pop_data)
+  ),
+  #############################################################################
+  # assemble activity input files (JSON) ----
+  #############################################################################
+  tar_target(
+    area_codes_csv,
+    here::here("data", "app_input_files", "area_names_and_codes.csv"),
+    format = "file"
+  ),
+  tar_target(
+    area_codes_all,
+    read_area_codes(area_codes_csv)
+  ),
+  # define modeling params as targets
+  tar_target(
+    area_codes,
+    param_areas
+  ),
+  tar_target(
+    x,
+    create_obs_rt_df_all_areas(area_codes, base_year = 2022)
+  ), # return something here?
+  tar_target(
+    y,
+    run_gams_all_areas(area_codes, base_year = 2022)
+  ),
+  tar_target(
+    df_obs_rts,
+    get_observed_profiles(area_codes, base_year = 2022)
+  ),
+  tar_target(
+    df_model_rts,
+    get_modeled_profiles(area_codes, base_year = 2022)
+  ),
+  # dynamic branching over row groups (area_code)
+  tarchetypes::tar_group_by(
+    df_rts,
+    combine_profiles(df_obs_rts, df_model_rts),
+    area_code
+  ),
+  tar_target(
+    act_input_files,
+    format_profiles_json(df_rts),
+    pattern = map(df_rts)
   )
-#   #############################################################################
-#   # assemble app files (JSON)
-#   #############################################################################
-#   # POPULATION INPUTS ----
-#   # dynamic branching over row groups (area_code)
-#   tarchetypes::tar_group_by(df_pop_data, build_pop_data(df_mye_series_to100, snpp_series_to100), area_code),
-#   tar_target(dfpop, format_pop_data_json(df_pop_data), pattern = map(df_pop_data)),
-#   # ACTIVITY INPUTS ----
-#   tar_target(area_codes_csv, here::here("data", "app_input_files", "area_names_and_codes.csv"),
-#     format = "file"),
-#   tar_target(area_codes_all, read_area_codes(area_codes_csv)),
-#   # define modeling params as targets
-#   tar_target(area_codes, param_areas),
-#   tar_target(x, create_obs_rt_df_all_areas(area_codes, base_year = 2022)), # return something here?
-#   tar_target(y, run_gams_all_areas(area_codes, base_year = 2022)),
-#   tar_target(df_obs_rts, get_observed_profiles(area_codes, base_year = 2022)),
-#   tar_target(df_model_rts, get_modeled_profiles(area_codes, base_year = 2022)),
-#   # dynamic branching over row groups (area_code)
-#   tarchetypes::tar_group_by(df_rts, combine_profiles(df_obs_rts, df_model_rts), area_code),
-#   tar_target(act_input_files, format_profiles_json(df_rts), pattern = map(df_rts)),
-#   # RESULTS INPUTS ----
+  #############################################################################
+  # assemble results input files (JSON) ----
+  #############################################################################
 #   # define modeling params as targets
 #   # param_areas defined above for activity inputs
 #   tar_target(base_year, param_by),
