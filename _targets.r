@@ -418,20 +418,30 @@ list(
     param_areas
   ),
   tar_target(
-    x,
+    obs_rt_path,
     create_obs_rt_df_all_areas(area_codes, base_year = 2022)
-  ), # return something here?
+  ),
   tar_target(
-    y,
+    model_rt_path,
     run_gams_all_areas(area_codes, base_year = 2022)
   ),
   tar_target(
     df_obs_rts,
-    get_observed_profiles(area_codes, base_year = 2022)
+    {
+      # ensure files are created/saved for each area before this target
+      force(obs_rt_path)
+      # now compile files across areas
+      get_observed_profiles(area_codes, base_year = 2022)
+    }
   ),
   tar_target(
     df_model_rts,
-    get_modeled_profiles(area_codes, base_year = 2022)
+    {
+      # ensure files are created/saved for each area before this target
+      force(model_rt_path)
+      # now compile files across areas
+      get_modeled_profiles(area_codes, base_year = 2022)
+    }
   ),
   # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
