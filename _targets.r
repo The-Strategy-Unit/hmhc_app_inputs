@@ -311,13 +311,13 @@ list(
     mk_mye_compl(df_mye_to100, df_raw_lad23, df_raw_cty23, df_icb23)
   ),
   #############################################################################
-  # assemble population projection series ----
+  # assemble population projections series ----
   #############################################################################
   tar_target(
     snpp_custom_vars,
     mk_custom_vars(df_npp, df_snpp)
   ),
-  # branch over df grouped by area_code
+  # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
     snpp_series_to90,
     mk_snpp_series(snpp_custom_vars, df_snpp, lookup_lad18_lad23, df_retired_cty, df_npp, df_icb23),
@@ -344,7 +344,7 @@ list(
     df_raw_edc,
     read_raw_edc(data_raw_edc)
   ),
-  # branch over df grouped by area_code
+  # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
     df_prep_edc,
     prep_edc(df_raw_edc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23),
@@ -364,7 +364,7 @@ list(
     df_raw_apc,
     read_raw_edc(data_raw_apc)
   ),
-  # branch over df grouped by area_code
+  # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
     df_prep_apc,
     prep_apc(df_raw_apc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23),
@@ -384,7 +384,7 @@ list(
     df_raw_opc,
     read_raw_opc(data_raw_opc)
   ),
-  # branch over df grouped by area_code
+  # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
     df_prep_opc,
     prep_opc(df_raw_opc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23),
@@ -453,45 +453,92 @@ list(
     act_input_files,
     format_profiles_json(df_rts),
     pattern = map(df_rts)
-  )
+  ),
   #############################################################################
   # assemble results input files (JSON) ----
   #############################################################################
-#   # define modeling params as targets
-#   # param_areas defined above for activity inputs
-#   tar_target(base_year, param_by),
-#   tar_target(end_year, param_ey),
-#   tar_target(proj_id, param_vars),
-#   # run pure demographic models
-#   tar_target(pure_demo,
-#     get_demographic_chg(area_codes, base_year, end_year, proj_id),
-#     pattern = cross(area_codes, base_year, end_year, proj_id)
-#   ),
-#   # run hsa mode only models
-#   tar_target(model_runs, param_draws),
-#   tar_target(rng_state, param_rng),
-#   tar_target(
-#     hsa_mode,
-#       get_hsa_chg(area_codes, base_year, end_year, proj_id, model_runs, rng_state, method = "gams", mode = TRUE),
-#       pattern = cross(area_codes, base_year, end_year, proj_id, map(model_runs, rng_state))
-#   ),
-#   # run hsa monte carlo models
-#   tar_target(
-#     hsa_mc,
-#       get_hsa_chg(area_codes, base_year, end_year, proj_id, model_runs, rng_state, method = "gams", mode = FALSE),
-#       pattern = cross(area_codes, base_year, end_year, proj_id, map(model_runs, rng_state))
-#   ),
-#   # group-up results by sex
-#   tar_target(pure_demo_grp, nomc_grp_sex(pure_demo)),
-#   tar_target(hsa_mode_grp, nomc_grp_sex(hsa_mode)),
-#   tar_target(hsa_mc_grp, mc_grp_sex(hsa_mc)),
-#   # compute histogram binning
-#   tar_target(hsa_mc_grp_bins, compute_binning(hsa_mc_grp)),
-#   # collect results into a single df
-#   # dynamic branching over row groups (area_code)
-#   tarchetypes::tar_group_by(df_res, join_res_dfs(pure_demo_grp, hsa_mode_grp, hsa_mc_grp_bins), area_code),
-#   tar_target(j, format_results_json(df_res), pattern = map(df_res))
+  # define modeling params as targets
+  # param_areas defined above for activity inputs
+  tar_target(
+    base_year,
+    param_by
+  ),
+  tar_target(
+    end_year,
+    param_ey
+  ),
+  tar_target(
+    proj_id,
+    param_vars
+  ),
+  # run pure demographic models
+  tar_target(
+    pure_demo,
+    get_demographic_chg(area_codes, base_year, end_year, proj_id),
+    pattern = cross(area_codes, base_year, end_year, proj_id)
+  ),
+  # define modeling params as targets
+  tar_target(
+    model_runs,
+    param_draws
+  ),
+  tar_target(
+    rng_state,
+    param_rng
+  ),
+  # run hsa mode only models
+  tar_target(
+    hsa_mode,
+    get_hsa_chg(
+      area_codes, base_year, end_year, proj_id, model_runs, rng_state,
+      method = "gams", mode = TRUE
+    ),
+    pattern = cross(
+      area_codes, base_year, end_year, proj_id,
+      map(model_runs, rng_state)
+    )
+  ),
+  # run hsa monte carlo models
+  tar_target(
+    hsa_mc,
+    get_hsa_chg(
+      area_codes, base_year, end_year, proj_id, model_runs, rng_state,
+      method = "gams", mode = FALSE
+    ),
+    pattern = cross(
+      area_codes, base_year, end_year, proj_id,
+      map(model_runs, rng_state)
+    )
+  ),
+  # group f/m split to persons
+  tar_target(
+    pure_demo_grp,
+    nomc_grp_sex(pure_demo)
+  ),
+  tar_target(
+    hsa_mode_grp,
+    nomc_grp_sex(hsa_mode)
+  ),
+  tar_target(
+    hsa_mc_grp,
+    mc_grp_sex(hsa_mc)
+  ),
+  # compute histogram binning
+  tar_target(
+    hsa_mc_grp_bins,
+    compute_binning(hsa_mc_grp)
+  ),
+  # collect results into a single df
+  # dynamic branching over row groups (area_code)
+  tarchetypes::tar_group_by(
+    df_res,
+    join_res_dfs(pure_demo_grp, hsa_mode_grp, hsa_mc_grp_bins),
+    area_code
+  ),
+  tar_target(
+    res_json,
+    format_results_json(df_res),
+    pattern = map(df_res)
+  )
 )
-# # nolint end: line_length_linter
-
-# # https://stackoverflow.com/questions/77947521/targets-does-not-recognize-other-targets-inside-values-of-tar-map
+# nolint end: line_length_linter
