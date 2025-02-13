@@ -8,6 +8,8 @@ prep_opc <- function(
 
   df <- df |>
     tidyr::drop_na() |>
+    # adults only
+    dplyr::filter(age >= 18) |>
     dplyr::filter(
       stringr::str_detect(lacd, "^(?:E10|E0[6-9])")
     ) |>

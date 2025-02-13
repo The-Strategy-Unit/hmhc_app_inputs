@@ -8,6 +8,8 @@ prep_apc <- function(
 
   df <- df |>
     tidyr::drop_na() |>
+    # adults only
+    dplyr::filter(age >= 18) |>
     dplyr::filter(
       stringr::str_detect(lacd, "^(?:E10|E0[6-9])")
     ) |>
@@ -32,7 +34,11 @@ prep_apc <- function(
     ) |>
     dplyr::mutate(hsagrp = paste(sep = "_", admigrp, units)) |>
     dplyr::select(-admigrp) |>
-    # omit daycase and regular attender bed-days
+    # omit births, paeds and maternity (all affected by inital 18+ filter)
+    dplyr::filter(
+      stringr::str_detect(hsagrp, "^birth|^paeds|^mat", negate = TRUE)
+    ) |>
+    # omit daycase and regular attender bed-days (inconsistent)
     dplyr::filter(!hsagrp %in% c("daycase_bds", "reg_bds"))
 
   # reconcile local government changes
