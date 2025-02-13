@@ -15,6 +15,24 @@ build_act_inputs <- list(
     run_gams_all_areas(area_codes, base_year = 2022)
   ),
   tar_target(
+    review_obs_rates,
+    {
+      # ensure files are created/saved for each area before this target
+      force(obs_rt_path)
+      review_area_obs_rates(area_codes, base_year = 2022)
+    },
+    pattern = map(area_codes)
+  ),
+  tar_target(
+    review_gams,
+    {
+      # ensure files are created/saved for each area before this target
+      force(model_rt_path)
+      review_area_gams(area_codes, base_year = 2022)
+    },
+    pattern = map(area_codes)
+  ),
+  tar_target(
     df_obs_rts,
     {
       # ensure files are created/saved for each area before this target
