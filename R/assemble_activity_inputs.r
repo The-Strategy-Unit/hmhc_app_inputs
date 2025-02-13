@@ -2,30 +2,10 @@
 # assemble data files for activity profiles interactive viz (JSON format)
 
 # functions ----
-# create_obs_rt_df_all_areas
-# run_gams_all_areas
 # get_observed_profiles
 # get_modeled_profiles
 # combine_profiles
 # format_profiles_json
-
-# create_obs_rt_df_all_areas() ----
-create_obs_rt_df_all_areas <- function(area_codes, base_year) {
-  purrr::map(
-    area_codes, \(x) {
-      create_obs_rt_df(x, base_year)
-    }
-  )
-}
-
-# run_gams_all_areas() ----
-run_gams_all_areas <- function(area_codes, base_year) {
-  purrr::map(
-    area_codes, \(x) {
-      run_area_gams(x, base_year)
-    }
-  )
-}
 
 # get_observed_profiles() ----
 get_observed_profiles <- function(area_codes, base_year) {

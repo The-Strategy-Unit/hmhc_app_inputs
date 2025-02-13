@@ -8,11 +8,13 @@ build_act_inputs <- list(
   ),
   tar_target(
     obs_rt_path,
-    create_obs_rt_df_all_areas(area_codes, base_year = 2022)
+    create_obs_rt_df(area_codes, base_year = 2022),
+    pattern = map(area_codes)
   ),
   tar_target(
     model_rt_path,
-    run_gams_all_areas(area_codes, base_year = 2022)
+    run_area_gams(area_codes, base_year = 2022),
+    pattern = map(area_codes)
   ),
   tar_target(
     review_obs_rates,
