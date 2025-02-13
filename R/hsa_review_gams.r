@@ -10,8 +10,8 @@ review_area_gams <- function(area_code, base_year) {
 
   path_self <- path_closure(area_code, base_year)
 
-  obs  <- readr::read_csv(path_self("obs_rt_tbl.csv"))
-  gams <- readr::read_csv(path_self("model_rt_tbl.csv"))
+  obs  <- readr::read_csv(path_self("obs_rt_df.csv"))
+  gams <- readr::read_csv(path_self("model_rt_df.csv"))
 
   dat <- obs |>
     dplyr::left_join(
