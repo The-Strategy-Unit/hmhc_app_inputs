@@ -53,6 +53,7 @@ pretty_fd <- function(x) {
 compute_binning <- function(df) {
   df |>
     dplyr::select(-end_n) |>
+    dplyr::mutate(end_p = purrr::map(end_p, \(x) 100 * x - 100)) |>
     dplyr::group_by(dplyr::across(-end_p)) |>
     dplyr::mutate(end_p = purrr::map(end_p, \(i) pretty_fd(i))) |>
     dplyr::ungroup()
