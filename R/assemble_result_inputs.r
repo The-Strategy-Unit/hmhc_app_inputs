@@ -144,19 +144,20 @@ format_results_json <- function(df) {
     ) |>
     dplyr::mutate(
       dplyr::across(
-        c("demo_p", "hsamd_p"),
+        c(demo_p, hsamd_p),
         ~ 100 * .x - 100
       )
     ) |>
     dplyr::rename(
       variant = variant_id,
+      pod = setting,
       group = hsagrp,
       label = hsagrp_label,
       data = hsamc_p
     ) |>
     dplyr::select(
       area_code,
-      variant, end_year, setting, group, label,
+      variant, end_year, pod, group, label,
       demo_p, hsamd_p, data
     ) |>
     dplyr::arrange(group)
