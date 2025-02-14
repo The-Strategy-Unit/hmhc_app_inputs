@@ -71,7 +71,8 @@ format_pop_data_json <- function(df) {
       )
     ) |>
     dplyr::relocate(data, .after = totals) |>
-    dplyr::select(-area_name)
+    dplyr::select(-area_name) |>
+    dplyr::arrange(variant, year)
 
   jsonlite::write_json(
     df_json,
