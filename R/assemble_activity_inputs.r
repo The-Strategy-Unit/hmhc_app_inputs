@@ -50,6 +50,7 @@ combine_profiles <- function(obs_rt_df, model_rt_df) {
       lookup_hsagrp_label,
       dplyr::join_by(hsagrp)
     ) |>
+    dplyr::mutate(hsagrp = factor(hsagrp, levels = hsagrp_levels)) |>
     dplyr::select(area_code, setting, hsagrp, hsagrp_label, sex, age, rt, s) |>
     dplyr::rename(group = hsagrp, label = hsagrp_label)
 }
@@ -58,8 +59,9 @@ combine_profiles <- function(obs_rt_df, model_rt_df) {
 format_profiles_json <- function(df_rts) {
 
   df_json <- df_rts |>
+    dplyr::rename(pod = setting) |>
     tidyr::nest(
-      .by = c(tidyselect::starts_with("area"), setting, group, label),
+      .by = c(tidyselect::starts_with("area"), pod, group, label),
       .key = "data"
     ) |>
     dplyr::mutate(
@@ -83,7 +85,8 @@ format_profiles_json <- function(df_rts) {
             dplyr::select(age, f, m, fs, ms)
         }
       )
-    )
+    ) |>
+    dplyr::arrange(group)
 
   jsonlite::write_json(
     df_json,
