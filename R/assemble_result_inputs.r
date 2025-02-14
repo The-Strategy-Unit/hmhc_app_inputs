@@ -128,7 +128,10 @@ join_res_dfs <- function(pure_demo, hsa_mode, hsa_mc) {
 format_results_json <- function(df) {
 
   df_json <- df |>
-    dplyr::filter(hsagrp %in% app_hsagrps) |>
+    dplyr::filter(
+      id %in% app_variants,
+      hsagrp %in% app_hsagrps
+    ) |>
     dplyr::left_join(
       lookup_hsagrp_label,
       dplyr::join_by(hsagrp)
@@ -139,7 +142,8 @@ format_results_json <- function(df) {
     ) |>
     dplyr::select(-id) |>
     dplyr::mutate(
-      hsagrp = factor(hsagrp, levels = hsagrp_levels),
+      variant_id = factor(variant_id, levels = variant_id_levels),
+      hsagrp = factor(hsagrp, levels = hsagrp_levels)
     ) |>
     dplyr::mutate(
       dplyr::across(
@@ -149,16 +153,17 @@ format_results_json <- function(df) {
     ) |>
     dplyr::rename(
       variant = variant_id,
+      pod = setting,
       group = hsagrp,
       label = hsagrp_label,
       data = hsamc_p
     ) |>
     dplyr::select(
       area_code,
-      variant, end_year, setting, group, label,
+      variant, end_year, pod, group, label,
       demo_p, hsamd_p, data
     ) |>
-    dplyr::arrange(group)
+    dplyr::arrange(group, end_year, variant)
 
   jsonlite::write_json(
     df_json,
