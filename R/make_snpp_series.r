@@ -117,11 +117,11 @@ mk_snpp_series <- function(
 }
 
 # snpp_to_dirs ----
-snpp_to_dirs <- function(df) {
+snpp_to_dirs <- function(df, dir_yyyy) {
   df |>
     tidyr::pivot_wider(names_from = "year", values_from = "pop") |>
     readr::write_rds(
-      here::here("data", "2022", df$area_code[[1]], "pop_dat.rds")
+      here::here("data", dir_yyyy, df$area_code[[1]], "pop_dat.rds")
     )
 }
 

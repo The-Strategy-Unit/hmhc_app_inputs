@@ -32,7 +32,7 @@ build_pop_series <- list(
   ),
   tar_target(
     snpp_series_to90_grp,
-    snpp_to_dirs(snpp_series_to90),
+    snpp_to_dirs(snpp_series_to90, dir_yyyy = 2023),
     pattern = map(snpp_series_to90)
   ),
   tar_target(
