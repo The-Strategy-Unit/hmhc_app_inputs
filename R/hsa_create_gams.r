@@ -47,12 +47,10 @@ create_obs_rt_df <- function(
   # load population data
   pop_df <- readr::read_rds(
     path_self(
-      filename = "pop_dat.rds"
+      filename = "pop_mye_dat.rds"
     )
   ) |>
-    # always princiapal variant here
-    dplyr::filter(id == "principal_proj") |>
-    dplyr::select(id, sex, age, !!as.name(base_year)) |>
+    dplyr::select(sex, age, !!as.name(base_year)) |>
     dplyr::rename(base_year = !!as.name(base_year))
 
   act_df <- act_df |>
@@ -129,12 +127,10 @@ create_area_gams <- function(
   # load population data
   pop_df <- readr::read_rds(
     path_self(
-      filename = "pop_dat.rds"
+      filename = "pop_mye_dat.rds"
     )
   ) |>
-    # always princiapal variant here
-    dplyr::filter(id == "principal_proj") |>
-    dplyr::select(id, sex, age, !!as.name(base_year)) |>
+    dplyr::select(sex, age, !!as.name(base_year)) |>
     dplyr::rename(base_year = !!as.name(base_year))
 
   # make explicit missing age values

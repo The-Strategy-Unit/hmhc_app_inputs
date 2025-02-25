@@ -41,7 +41,7 @@ create_demographic_factors <- function(
 
   path_self <- path_closure(area_code, base_year)
 
-  readr::read_rds(path_self("pop_dat.rds")) |>
+  readr::read_rds(path_self("pop_snpp_dat.rds")) |>
     dplyr::filter(id == proj_id) |>
     dplyr::mutate(demo_fac = !!as.name(end_year) / !!as.name(base_year)) |>
     dplyr::select(id, sex, age, demo_fac)
