@@ -121,7 +121,7 @@ snpp_to_dirs <- function(df, dir_yyyy) {
   df |>
     tidyr::pivot_wider(names_from = "year", values_from = "pop") |>
     readr::write_rds(
-      here::here("data", dir_yyyy, df$area_code[[1]], "pop_dat.rds")
+      here::here("data", dir_yyyy, df$area_code[[1]], "pop_snpp_dat.rds")
     )
 }
 
