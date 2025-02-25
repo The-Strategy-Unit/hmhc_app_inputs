@@ -8,12 +8,12 @@ build_act_inputs <- list(
   ),
   tar_target(
     obs_rt_path,
-    create_obs_rt_df(area_codes, base_year = 2022),
+    create_obs_rt_df(area_codes, base_year = 2023),
     pattern = map(area_codes)
   ),
   tar_target(
     model_rt_path,
-    run_area_gams(area_codes, base_year = 2022),
+    run_area_gams(area_codes, base_year = 2023),
     pattern = map(area_codes)
   ),
   tar_target(
@@ -21,7 +21,7 @@ build_act_inputs <- list(
     {
       # ensure files are created/saved for each area before this target
       force(obs_rt_path)
-      review_area_obs_rates(area_codes, base_year = 2022)
+      review_area_obs_rates(area_codes, base_year = 2023)
     },
     pattern = map(area_codes)
   ),
@@ -30,7 +30,7 @@ build_act_inputs <- list(
     {
       # ensure files are created/saved for each area before this target
       force(model_rt_path)
-      review_area_gams(area_codes, base_year = 2022)
+      review_area_gams(area_codes, base_year = 2023)
     },
     pattern = map(area_codes)
   ),
@@ -40,7 +40,7 @@ build_act_inputs <- list(
       # ensure files are created/saved for each area before this target
       force(obs_rt_path)
       # now compile files across areas
-      get_observed_profiles(area_codes, base_year = 2022)
+      get_observed_profiles(area_codes, base_year = 2023)
     }
   ),
   tar_target(
@@ -49,7 +49,7 @@ build_act_inputs <- list(
       # ensure files are created/saved for each area before this target
       force(model_rt_path)
       # now compile files across areas
-      get_modeled_profiles(area_codes, base_year = 2022)
+      get_modeled_profiles(area_codes, base_year = 2023)
     }
   ),
   # dynamic branching over row groups (area_code)
