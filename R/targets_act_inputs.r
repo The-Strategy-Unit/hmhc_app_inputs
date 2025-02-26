@@ -9,12 +9,24 @@ build_act_inputs <- list(
   ),
   tar_target(
     obs_rt_path,
-    create_obs_rt_df(area_codes, base_year = 2023),
+    {
+      # ensure activity data is loaded/prepped before this target
+      force(df_prep_edc_grp)
+      force(df_prep_apc_grp)
+      force(df_prep_opc_grp)
+      create_obs_rt_df(area_codes, base_year = 2023)
+    },
     pattern = map(area_codes)
   ),
   tar_target(
     model_rt_path,
-    run_area_gams(area_codes, base_year = 2023),
+    {
+      # ensure activity data is loaded/prepped before this target
+      force(df_prep_edc_grp)
+      force(df_prep_apc_grp)
+      force(df_prep_opc_grp)
+      run_area_gams(area_codes, base_year = 2023)
+    },
     pattern = map(area_codes)
   ),
   tar_target(
