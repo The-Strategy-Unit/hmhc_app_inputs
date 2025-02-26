@@ -19,7 +19,7 @@ read_act_data <- list(
   ),
   tar_target(
     df_prep_edc_grp,
-    edc_to_dirs(df_prep_edc),
+    edc_to_dirs(df_prep_edc, dir_yyyy = 2023),
     pattern = map(df_prep_edc)
   ),
   tar_target(
@@ -39,7 +39,7 @@ read_act_data <- list(
   ),
   tar_target(
     df_prep_apc_grp,
-    apc_to_dirs(df_prep_apc),
+    apc_to_dirs(df_prep_apc, dir_yyyy = 2023),
     pattern = map(df_prep_apc)
   ),
   tar_target(
@@ -59,7 +59,7 @@ read_act_data <- list(
   ),
   tar_target(
     df_prep_opc_grp,
-    opc_to_dirs(df_prep_opc),
+    opc_to_dirs(df_prep_opc, dir_yyyy = 2023),
     pattern = map(df_prep_opc)
   )
 )

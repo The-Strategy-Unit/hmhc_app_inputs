@@ -139,9 +139,9 @@ prep_opc <- function(
 }
 
 # opc_to_dirs ----
-opc_to_dirs <- function(df) {
+opc_to_dirs <- function(df, dir_yyyy) {
   readr::write_rds(
     df,
-    here::here("data", "2022", df$area_code[[1]], "opc_dat.rds")
+    here::here("data", dir_yyyy, df$area_code[[1]], "opc_dat.rds")
   )
 }
