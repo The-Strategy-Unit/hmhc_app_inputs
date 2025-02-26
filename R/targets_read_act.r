@@ -2,6 +2,7 @@
 
 # nolint start: line_length_linter
 read_act_data <- list(
+  tar_option_set(description = "activity"),
   tar_target(
     data_raw_edc,
     here::here("data_raw", "edc_dat_2023_20250219.csv"),

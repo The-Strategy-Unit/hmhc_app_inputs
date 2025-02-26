@@ -1,6 +1,7 @@
 # README
 
 build_act_inputs <- list(
+  tar_option_set(description = "activity"),
   # define modeling params as targets
   tar_target(
     area_codes,
