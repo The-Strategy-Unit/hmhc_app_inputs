@@ -1,6 +1,7 @@
 # README
 
 build_pop_inputs <- list(
+  tar_option_set(description = "pop_inputs"),
   # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
     df_pop_data,
