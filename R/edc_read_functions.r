@@ -23,8 +23,9 @@ review_raw_edc <- function(df) {
       stat = "identity"
     )
 
+  p1_nm <- "edc_review_mmbygrp.png"
   ggplot2::ggsave(
-    here::here("figures", "edc_review_yyyymm.png"),
+    here::here("figures", p1_nm),
     p1
   )
 
@@ -37,8 +38,9 @@ review_raw_edc <- function(df) {
       ggplot2::aes(x = reorder(lacd, n), y = n)
     )
 
+  p2_nm <- "edc_review_lacd.png"
   ggplot2::ggsave(
-    here::here("figures", "edc_review_lacd.png"),
+    here::here("figures", p2_nm),
     p2
   )
 
@@ -46,8 +48,7 @@ review_raw_edc <- function(df) {
   p3 <- df |>
     dplyr::group_by(lacd, arrmode) |>
     dplyr::summarise(n = sum(n)) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(pct_arrmode = n / sum(n)) |>
+    dplyr::mutate(pct_arrmode = n / sum(n) * 100) |>
     dplyr::select(-n) |>
     dplyr::mutate(
       arrmode = factor(arrmode),
@@ -66,8 +67,9 @@ review_raw_edc <- function(df) {
       scales = "free_x"
     )
 
+  p3_nm <- "edc_review_lacdbygrp.png"
   ggplot2::ggsave(
-    here::here("figures", "edc_review_hsagrp_bylacd.png"),
+    here::here("figures", p3_nm),
     p3
   )
 
@@ -84,8 +86,11 @@ review_raw_edc <- function(df) {
       scales = "free_y"
     )
 
+  p4_nm <- "edc_review_agebygrp.png"
   ggplot2::ggsave(
-    here::here("figures", "edc_review_hsagrp_byage.png"),
+    here::here("figures", p4_nm),
     p4
   )
+
+  return(list(c(p1_nm, p2_nm, p3_nm, p4_nm)))
 }

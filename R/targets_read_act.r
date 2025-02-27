@@ -12,6 +12,10 @@ read_act_data <- list(
     df_raw_edc,
     read_raw_edc(data_raw_edc)
   ),
+  tar_target(
+    rw_raw_edc,
+    review_raw_edc(df_raw_edc)
+  ),
   # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
     df_prep_edc,
