@@ -134,3 +134,12 @@ mk_mye_compl <- function(mye, lad23, cty23, icb23) {
   # combine
   dplyr::bind_rows(mye_lad, mye_cty, mye_icb, mye_eng)
 }
+
+# mye_to_dirs ----
+mye_to_dirs <- function(df, dir_yyyy) {
+  df |>
+    tidyr::pivot_wider(names_from = "year", values_from = "pop") |>
+    readr::write_rds(
+      here::here("data", dir_yyyy, df$area_code[[1]], "pop_mye_dat.rds")
+    )
+}

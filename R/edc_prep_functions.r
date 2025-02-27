@@ -108,8 +108,8 @@ prep_edc <- function(
 }
 
 # edc_to_dirs ----
-edc_to_dirs <- function(df) {
+edc_to_dirs <- function(df, dir_yyyy) {
   readr::write_rds(
-    df, here::here("data", "2022", df$area_code[[1]], "edc_dat.rds")
+    df, here::here("data", dir_yyyy, df$area_code[[1]], "edc_dat.rds")
   )
 }

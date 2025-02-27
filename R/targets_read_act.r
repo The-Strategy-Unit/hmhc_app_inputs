@@ -2,9 +2,10 @@
 
 # nolint start: line_length_linter
 read_act_data <- list(
+  tar_option_set(description = "activity"),
   tar_target(
     data_raw_edc,
-    here::here("data_raw", "edc_dat_20250120.csv"),
+    here::here("data_raw", "edc_dat_2023_20250219.csv"),
     format = "file"
   ),
   tar_target(
@@ -19,12 +20,12 @@ read_act_data <- list(
   ),
   tar_target(
     df_prep_edc_grp,
-    edc_to_dirs(df_prep_edc),
+    edc_to_dirs(df_prep_edc, dir_yyyy = 2023),
     pattern = map(df_prep_edc)
   ),
   tar_target(
     data_raw_apc,
-    here::here("data_raw", "apc_dat_20250120.csv"),
+    here::here("data_raw", "apc_dat_2023_20250219.csv"),
     format = "file"
   ),
   tar_target(
@@ -39,12 +40,12 @@ read_act_data <- list(
   ),
   tar_target(
     df_prep_apc_grp,
-    apc_to_dirs(df_prep_apc),
+    apc_to_dirs(df_prep_apc, dir_yyyy = 2023),
     pattern = map(df_prep_apc)
   ),
   tar_target(
     data_raw_opc,
-    here::here("data_raw", "opc_dat_20250120.csv"),
+    here::here("data_raw", "opc_dat_2023_20250219.csv"),
     format = "file"
   ),
   tar_target(
@@ -59,7 +60,7 @@ read_act_data <- list(
   ),
   tar_target(
     df_prep_opc_grp,
-    opc_to_dirs(df_prep_opc),
+    opc_to_dirs(df_prep_opc, dir_yyyy = 2023),
     pattern = map(df_prep_opc)
   )
 )

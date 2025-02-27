@@ -47,8 +47,8 @@ vars_all <- c(
 )
 
 param_areas  <- if (rlang::is_true(dev_run)) areas_test else areas_all
-param_by     <- 2022L
-param_ey     <- if (rlang::is_true(dev_run)) seq(2025L, 2040L, 5L) else seq(2025L, 2040L, 5L)
+param_by     <- 2023L
+param_ey     <- if (rlang::is_true(dev_run)) 2035 else seq(2025L, 2040L, 5L)
 param_vars   <- vars_all
 param_draws  <- if (rlang::is_true(dev_run)) 1e2 else 1e3
 param_rng    <- 014796
