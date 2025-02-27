@@ -14,13 +14,17 @@ review_raw_edc <- function(df) {
 
   # by month
   p1 <- df |>
-    dplyr::group_by(yyyymm) |>
+    dplyr::group_by(arrmode, yyyymm) |>
     dplyr::summarise(n = sum(n)) |>
     dplyr::mutate(yyyymm = factor(yyyymm)) |>
     ggplot2::ggplot() +
     ggplot2::geom_bar(
       ggplot2::aes(x = yyyymm, y = n),
       stat = "identity"
+    ) +
+    ggplot2::facet_wrap(
+      ggplot2::vars(arrmode),
+      scales = "free_y"
     )
 
   p1_nm <- "edc_review_mmbygrp.png"
