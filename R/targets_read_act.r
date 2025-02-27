@@ -60,11 +60,19 @@ read_act_data <- list(
     df_raw_opc,
     read_raw_opc(data_raw_opc)
   ),
+  tar_target(
+    rw_raw_opc,
+    review_raw_opc(df_raw_opc)
+  ),
   # dynamic branching over row groups (area_code)
   tarchetypes::tar_group_by(
     df_prep_opc,
     prep_opc(df_raw_opc, lookup_lad18_lad23, df_icb23, df_raw_cty23, df_raw_lad23),
     area_code
+  ),
+  tar_target(
+    rw_prep_opc,
+    review_clean_opc(df_prep_opc)
   ),
   tar_target(
     df_prep_opc_grp,

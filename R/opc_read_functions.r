@@ -23,8 +23,9 @@ review_raw_opc <- function(df) {
       stat = "identity"
     )
 
+  p1_nm <- "opc_review_mm.png"
   ggplot2::ggsave(
-    here::here("figures", "opc_review_yyyymm.png"),
+    here::here("figures", p1_nm),
     p1
   )
 
@@ -37,8 +38,9 @@ review_raw_opc <- function(df) {
       ggplot2::aes(x = reorder(lacd, n), y = n)
     )
 
+  p2_nm <- "opc_review_lacd.png"
   ggplot2::ggsave(
-    here::here("figures", "opc_review_lacd.png"),
+    here::here("figures", p2_nm),
     p2
   )
 
@@ -88,10 +90,13 @@ review_raw_opc <- function(df) {
     tidytext::scale_x_reordered() +
     ggplot2::facet_wrap(ggplot2::vars(grp), scales = "free_x")
 
+  p3_nm <- "opc_review_lacdbygrp.png"
   ggplot2::ggsave(
-    here::here("figures", "opc_review_hsagrp_bylacd.png"),
+    here::here("figures", p3_nm),
     p3
   )
+
+  return(list(c(p1_nm, p2_nm, p3_nm)))
 }
 
 # review_clean_opc() ----
@@ -107,26 +112,11 @@ review_clean_opc <- function(df) {
     ggplot2::geom_point() +
     ggplot2::facet_wrap(ggplot2::vars(hsagrp), scales = "free_y")
 
+  p1_nm <- "opc_review_agebygrp.png"
   ggplot2::ggsave(
-    here::here("figures", "opc_review_hsagrp_byage.png"),
+    here::here("figures", p1_nm),
     p1
   )
-
-  # review tele_atts by age
-  p2 <- df |>
-    dplyr::filter(
-      stringr::str_detect(hsagrp, "proc", negate = TRUE)
-    ) |>
-    dplyr::group_by(hsagrp, sex, age) |>
-    dplyr::summarise(tele_atts = sum(tele_atts)) |>
-    ggplot2::ggplot(
-      ggplot2::aes(x = age, y = tele_atts, group = sex, color = sex)
-    ) +
-    ggplot2::geom_point() +
-    ggplot2::facet_wrap(ggplot2::vars(hsagrp), scales = "free_y")
-
-  ggplot2::ggsave(
-    here::here("figures", "opc_review_tele_byage.png"),
-    p2
-  )
+  
+  return(list(c(p1_nm)))
 }
