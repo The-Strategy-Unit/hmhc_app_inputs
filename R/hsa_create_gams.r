@@ -155,7 +155,7 @@ create_area_gams <- function(
   act_df <- act_df |>
     dplyr::mutate(
       rt = dplyr::case_when(
-        base_year = 0 & is.nan(rt) ~ 0,
+        base_year == 0 & (is.nan(rt) | is.infinite(rt)) ~ 0,
         TRUE ~ rt
       )
     )
