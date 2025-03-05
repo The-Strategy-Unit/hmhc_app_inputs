@@ -38,7 +38,7 @@ review_area_obs_rates <- function(area_code, base_year) {
   path_self <- path_closure(area_code, base_year)
 
   obs_eng <- readr::read_csv(
-    here::here("data", 2022, "E92000001", "obs_rt_df.csv")
+    here::here("data", base_year, "E92000001", "obs_rt_df.csv")
   )
   obs  <- readr::read_csv(path_self("obs_rt_df.csv"))
 
