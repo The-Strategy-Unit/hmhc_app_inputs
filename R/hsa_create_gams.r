@@ -151,6 +151,15 @@ create_area_gams <- function(
   # rate per person per year
   act_df$rt <- act_df$n / act_df$base_year
 
+  # handle NaNs caused by zero population counts
+  act_df <- act_df |>
+    dplyr::mutate(
+      rt = dplyr::case_when(
+        base_year == 0 & (is.nan(rt) | is.infinite(rt)) ~ 0,
+        TRUE ~ rt
+      )
+    )
+
   # create gams
   gams <- act_df |>
     dplyr::nest_by(area_code, setting, hsagrp, sex) |>
