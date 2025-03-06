@@ -7,10 +7,12 @@ source(here::here("R", "read_very_old.r"))
 source(here::here("R", "make_mye_series.r"))
 
 # a) test that modeled 90-100+ estimates match original 90+ totals
-data_raw_mye <- read_mye(
-  here::here(
-    "data_raw",
-    "nomis_mye_lad_1991to2023_20250116.csv"
+data_raw_mye <- suppressWarnings(
+  read_mye(
+    here::here(
+      "data_raw",
+      "nomis_mye_lad_1991to2023_20250116.csv"
+    )
   )
 )
 
