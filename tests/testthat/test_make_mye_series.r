@@ -2,9 +2,9 @@
 # test apportionment of local area 85+ and 90+ populations to 0-100+
 
 # load custom functions
-source("R/read_pop_mye.r")
-source("R/read_very_old.r")
-source("R/make_mye_series.r")
+source(here::here("R", "read_pop_mye.r"))
+source(here::here("R", "read_very_old.r"))
+source(here::here("R", "make_mye_series.r"))
 
 # a) test that modeled 90-100+ estimates match original 90+ totals
 data_raw_mye <- read_mye(

@@ -2,13 +2,13 @@
 # test validity of custom variant populations
 
 # load custom functions
-source("R/read_pop_mye.r")
-source("R/read_very_old.r")
-source("R/make_mye_series.r")
-source("R/read_npp_2018b.r")
-source("R/read_snpp_2018b.r")
-source("R/make_snpp_2018b_custom_vars.r")
-source("R/helper_lookups.r")
+source(here::here("R", "read_pop_mye.r"))
+source(here::here("R", "read_very_old.r"))
+source(here::here("R", "make_mye_series.r"))
+source(here::here("R", "read_npp_2018b.r"))
+source(here::here("R", "read_snpp_2018b.r"))
+source(here::here("R", "make_snpp_2018b_custom_vars.r"))
+source(here::here("R", "helper_lookups.r"))
 
 # a) test consistency of custom variant population total ranking v. npp rank by lad # nolint: line_length_linter.
 # pick a year to test

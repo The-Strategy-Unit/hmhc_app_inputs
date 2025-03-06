@@ -2,14 +2,14 @@
 # Test modeled snpp series 90+ equals npp 90+ by variant
 
 # load custom functions
-source("R/read_pop_mye.r")
-source("R/read_very_old.r")
-source("R/make_mye_series.r")
-source("R/read_npp_2018b.r")
-source("R/read_snpp_2018b.r")
-source("R/make_snpp_2018b_custom_vars.r")
-source("R/helper_lookups.r")
-source("R/make_snpp_series_age100.r")
+source(here::here("R", "read_pop_mye.r"))
+source(here::here("R", "read_very_old.r"))
+source(here::here("R", "make_mye_series.r"))
+source(here::here("R", "read_npp_2018b.r"))
+source(here::here("R", "read_snpp_2018b.r"))
+source(here::here("R", "make_snpp_2018b_custom_vars.r"))
+source(here::here("R", "helper_lookups.r"))
+source(here::here("R", "make_snpp_series_age100.r"))
 
 snpp_paths <- fs::dir_ls(
   here::here("data_raw"), regexp = "2018 SNPP.*(females|males).*(.csv$)",
