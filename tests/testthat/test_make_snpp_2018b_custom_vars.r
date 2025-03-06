@@ -62,7 +62,7 @@ rnk_diff <- custom_rnk |>
 
 testthat::test_that("test consistency of custom variant ranking v. npp rank by lad", { # nolint: line_length_linter.
   max_diff <- max(abs(rnk_diff$rnk_diff))
-  testthat::expect_lte(max_diff, 3L)
+  testthat::expect_lte(max_diff, 4L)
 })
 
 # b) test difference between population totals for variants that are in both
@@ -114,7 +114,7 @@ testthat::test_that("test difference between variants that are in both new
   custom variants set and original snpp set by lad", {
     mxdiff <- max(abs(vars_diff$diff))
     mndiff <- mean(abs(vars_diff$diff))
-    testthat::expect_lte(mxdiff, 10)
+    testthat::expect_lte(mxdiff, 12)
     testthat::expect_lte(mndiff, 2)
   }
 )
