@@ -14,6 +14,7 @@ source(here::here("R", "helper_lookups.r"))
 # pick a year to test
 rng_year <- sample(seq(2019, 2043), size = 1L)
 test_yr <- as.character(rng_year)
+print(test_yr)
 
 snpp_paths <- fs::dir_ls(
   here::here("data_raw"), regexp = "2018 SNPP.*(females|males).*(.csv$)",
