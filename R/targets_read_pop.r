@@ -1,6 +1,7 @@
 # README
 
 read_pop_data <- list(
+  tar_option_set(description = "read"),
   tar_target(
     data_raw_very_old,
     here::here("data_raw", "englandevo2023.csv"),
