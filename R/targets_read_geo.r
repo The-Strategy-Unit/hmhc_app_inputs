@@ -2,6 +2,7 @@
 
 # nolint start: line_length_linter
 read_geo_data <- list(
+  tar_option_set(description = "read"),
   tar_target(
     data_raw_lad18,
     here::here("data_raw", "LAD_(Dec_2018)_Names_and_Codes_in_the_United_Kingdom.csv"),

@@ -83,9 +83,9 @@ fs::dir_ls(here::here("R"), glob = "*.r") |>
 # pipeline ----
 # modularized
 list(
-  read_pop_data,
   read_geo_data,
   read_act_data,
+  read_pop_data,
   build_pop_series, # watch name clash!
   build_pop_inputs,
   build_act_inputs,
